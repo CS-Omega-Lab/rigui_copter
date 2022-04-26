@@ -3,6 +3,7 @@ from threading import Thread
 
 from Host.HostNetworkClient import NetworkClient as NC
 from Host.Drivers.Keyboard import Keyboard as KC
+from Host.ManualCameraReader import ManualCameraReader as MCR
 
 
 class DataManager:
@@ -31,6 +32,7 @@ class DataManager:
         self.lg('HOST', 0, 'Запуск DataManager: успешно.')
         self.keyboard_connector = KC(self, config['keyboard']).start()
         self.network_client = NC(self, config['general']).start()
+        self.mcr = MCR(self).start()
 
     def get_logs(self):
         return self.log_list
