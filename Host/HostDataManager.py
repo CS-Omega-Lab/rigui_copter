@@ -1,9 +1,9 @@
 import time
 from threading import Thread
 
-from Host.HostNetworkClient import NetworkClient as NC
-from Host.Drivers.Keyboard import Keyboard as KC
-from Host.ManualCameraReader import ManualCameraReader as MCR
+from Host.HostNetworkClient import NetworkClient
+from Host.Drivers.KeyManager import KeyManager
+from Host.ManualCameraReader import ManualCameraReader
 
 
 class DataManager:
@@ -13,32 +13,35 @@ class DataManager:
         self.rows = rows
         self.config = config
 
-        # mode,         [0][1]
-        # motor_params, [1][2]
-        # fin_params,   [2][2]
-        # max_speed,    [3][1]
-        # current_axis, [4][1]
-        # axis_params,  [5][1]
-
         self.mode = [
-            True,
-            (127, 127),
-            (127, 127),
-            127,
-            0,
-            127
+            True,   # Режим управления: ручной (True) или полуавтомат (False)
+            True,   # Режим передачи данных для ручного режима: езда (True) или манипулятор (False)
+            100,    # Текущая максимальная скорость
+            0,      # Номер пресета
+            1       # Длительность пресета
         ]
+
+        self.vals = [
+            (127, 127),  # Состояние двигателей гусениц
+            (127, 127),  # Состояние двигателей плавников
+            0,           # Текущая ось (для манипулятора)
+            127,         # Состояние двигателя оси (для манипулятора)
+            (127, 127)   # Параметры двигателей подвеса камеры
+        ]
+
         self.thread = Thread(target=self.update, daemon=True, args=())
-        self.lg('HOST', 0, 'Запуск DataManager: успешно.')
-        self.keyboard_connector = KC(self, config['keyboard']).start()
-        self.network_client = NC(self, config['general']).start()
-        self.mcr = MCR(self).start()
+        self.keyboard_connector = KeyManager(self).start()
+        self.network_client = NetworkClient(self, config['general']).start()
+        self.camera_reader = ManualCameraReader(self).start()
 
     def get_logs(self):
         return self.log_list
 
     def get_mode(self):
         return self.mode
+
+    def get_vals(self):
+        return self.vals
 
     def lg(self, src, typ, message):
         if typ == 0:
@@ -56,26 +59,16 @@ class DataManager:
             self.log_list = self.log_list[idx + 1:]
 
     def start(self):
-        self.thread.start()
+        try:
+            self.thread.start()
+            self.lg('HOST', 0, 'Запуск DataManager: успешно.')
+        except Exception as e:
+            self.lg('HOST', 1, 'Ошибка запуска DataManager: '+str(e))
         return self
 
     def update(self):
         while True:
             time.sleep(0.01)
-            self.mode = self.keyboard_connector.get_state()
-
-            # mode,         [0][1]
-            # motor_params, [1][2]
-            # fin_params,   [2][2]
-            # current_axis, [3][1]
-            # axis_params,  [4][1]
-
-            self.network_client.send_info((
-                self.mode[0],
-                self.mode[1][0],
-                self.mode[1][1],
-                self.mode[2][0],
-                self.mode[2][1],
-                self.mode[4],
-                self.mode[5]
-            ))
+            self.mode = self.keyboard_connector.get_mode()
+            self.vals = self.keyboard_connector.get_vals()
+            self.network_client.send_info(self.vals)

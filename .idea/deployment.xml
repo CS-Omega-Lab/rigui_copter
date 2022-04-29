@@ -3,10 +3,17 @@
   <component name="PublishConfigData" autoUpload="On explicit save action" serverName="rtc_pi" remoteFilesAllowedToDisappearOnAutoupload="false" confirmBeforeUploading="false" autoUploadExternalChanges="true">
     <option name="confirmBeforeUploading" value="false" />
     <serverData>
+      <paths name="root@m16-estate.ru:22 key">
+        <serverdata>
+          <mappings>
+            <mapping local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
       <paths name="rtc_pi">
         <serverdata>
           <mappings>
-            <mapping deploy="/home/hxps/explora" local="$PROJECT_DIR$" web="/" />
+            <mapping local="$PROJECT_DIR$" web="/" />
           </mappings>
         </serverdata>
       </paths>
