@@ -57,6 +57,8 @@ class KeyManager:
         ]
         self.active = True
 
+        self.ping = False
+
         self.thread = Thread(target=self.update, daemon=True, args=())
 
     def get_mode(self):
@@ -65,7 +67,8 @@ class KeyManager:
             self.manual_mode,
             self.max_speed,
             self.current_preset,
-            self.presets[self.current_preset]
+            self.presets[self.current_preset],
+            self.ping
         ]
 
     def get_vals(self):
@@ -86,6 +89,11 @@ class KeyManager:
         return win32api.GetKeyState(win32con.VK_NUMLOCK)
 
     def detect_key(self, e):
+
+        if e.event_type == 'up' and e.name == 'p':
+            self.ping = True
+            time.sleep(0.02)
+            self.ping = False
 
         if e.event_type == 'down' and e.name == '2':
             self.dva = True
@@ -286,6 +294,7 @@ class KeyManager:
 
         keyboard.hook_key('m', self.detect_key)
         keyboard.hook_key('space', self.detect_key)
+        keyboard.hook_key('p', self.detect_key)
 
         keyboard.hook_key('1', self.detect_key)
         keyboard.hook_key('2', self.detect_key)

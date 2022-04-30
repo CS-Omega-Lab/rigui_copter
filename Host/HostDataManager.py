@@ -18,7 +18,8 @@ class DataManager:
             True,   # Режим передачи данных для ручного режима: езда (True) или манипулятор (False)
             100,    # Текущая максимальная скорость
             0,      # Номер пресета
-            1       # Длительность пресета
+            1,      # Длительность пресета
+            False   # PING
         ]
 
         self.vals = [
@@ -71,4 +72,7 @@ class DataManager:
             time.sleep(0.01)
             self.mode = self.keyboard_connector.get_mode()
             self.vals = self.keyboard_connector.get_vals()
+            if self.mode[5]:
+                self.network_client.send_ping()
+                continue
             self.network_client.send_info(self.vals)

@@ -1,13 +1,18 @@
 import time
 import os
+import configparser
 
-from Robot.RobotDataManager import DataProvider as DP
+from Robot.RobotDataManager import DataManager as DM
 from Robot.ManualCameraStreamer import ManualCameraStreamer as MCS
 
-os.system('clear')
+config = configparser.ConfigParser()
+config.read("assets/explora.cfg")
 
-dp = DP().start()
-mcs = MCS().start()
+os.system('clear')
+print('Запускаюсь...')
+
+dp = DM(config).start()
+mcs = MCS(dp).start()
 
 dp.lg('ROBOT', 0, 'Робот готов.')
 

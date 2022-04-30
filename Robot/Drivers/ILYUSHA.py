@@ -1,15 +1,20 @@
+# noinspection PyUnresolvedReferences
 import serial
 import time
+import os
 
 
 class ILYUSHA:
-
-    def __init__(self, id):
-        self.ser = serial.Serial('/dev/ttyUSB0', 115200)
-        self.ID = id
+    def __init__(self, rdm, ch_id):
+        if not os.path.exists(rdm.devices['uart-ttl_dev']):
+            rdm.lg('ROBOT', 1, 'Устройство UART-TTL на '+rdm.devices['uart-ttl_dev']+' не подключено.')
+        self.ser = serial.Serial(rdm.devices['uart-ttl_dev'], 115200)
+        rdm.lg('ROBOT', 0, 'Устройство UART-TTL на ' + rdm.devices['uart-ttl_dev'] + ' подключено.')
+        self.ID = int(ch_id)
         self.flag = True
         self.velocity = 50
         self.stop_flag = False
+        rdm.lg('ROBOT', 0, 'Пингую устройство UART-TTL на ' + rdm.devices['uart-ttl_dev'] + ', ID='+ch_id+'...')
         while self.flag:
             self.ping()
             time.sleep(0.1)
@@ -31,11 +36,7 @@ class ILYUSHA:
         time.sleep(0.01)
         while self.ser.inWaiting():
             data.append(self.ser.read())
-        sended = []
-        sended.append(int.from_bytes(data[5], byteorder='big'))
-        sended.append(int.from_bytes(data[6], byteorder='big'))
-
-        return sended
+        return [int.from_bytes(data[5], byteorder='big'), int.from_bytes(data[6], byteorder='big')]
 
     def move_speed(self, speed):
         self.ser.reset_input_buffer()
@@ -98,14 +99,12 @@ class ILYUSHA:
             self.ser.reset_input_buffer()
             self.flag = False
 
-
     def move(self, speed):
-        self.speed = speed
         self.motor_enable(2)
-        if self.speed == 127 and not self.stop_flag:
+        if speed == 127 and not self.stop_flag:
             self.motor_enable(1)
             self.move_position(self.read_position())
-        elif self.speed > 127:
+        elif speed > 127:
             self.move_speed(self.velocity)
         else:
             self.move_speed(-self.velocity)

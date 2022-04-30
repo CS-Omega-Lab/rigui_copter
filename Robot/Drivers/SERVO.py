@@ -1,19 +1,23 @@
-from threading import Thread
-
+# noinspection PyUnresolvedReferences
 import RPi.GPIO as GPIO
+from threading import Thread
 import time
 
 
 class SERVO:
-
     def __init__(self, pin):
+        GPIO.setwarnings(False)
+        GPIO.setmode(GPIO.BOARD)
         self.speed = 127
-        self.pin = pin
-        self.thread = Thread(target=self.update, daemon=True, args=()).start()
+        self.pin = int(pin)
         GPIO.setup(self.pin, GPIO.OUT)
         self.pwm = GPIO.PWM(self.pin, 50)
         self.position = 7.5
         self.pwm.start(self.position)
+        self.thread = Thread(target=self.update, daemon=True, args=()).start()
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        GPIO.cleanup()
 
     def move(self, speed):
         self.speed = speed
