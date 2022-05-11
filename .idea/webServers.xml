@@ -9,6 +9,13 @@
           </advancedOptions>
         </fileTransfer>
       </webServer>
+      <webServer id="d1f22ebf-62fe-4239-8fc8-7b3d4a934730" name="rtc_pi_self">
+        <fileTransfer accessType="SFTP" host="192.168.31.38" port="22" sshConfigId="57d7bc54-9e83-438d-8723-1950c188a0b7" sshConfig="hxps@192.168.31.38:22 password">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
     </option>
   </component>
 </project>

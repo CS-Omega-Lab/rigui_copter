@@ -92,7 +92,7 @@ class KeyManager:
 
         if e.event_type == 'up' and e.name == 'p':
             self.ping = True
-            time.sleep(0.02)
+            time.sleep(0.04)
             self.ping = False
 
         if e.event_type == 'down' and e.name == '2':

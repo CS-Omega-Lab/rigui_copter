@@ -55,7 +55,7 @@ class DataManager:
             self.log_list += "[blue bold]\[" + src + \
                              "][/][red bold]::[/][yellow bold]WARN[/][red bold]::[/]" + message + "\r\n"
         self.log_ctr += 1
-        if self.log_ctr >= self.rows - 4:
+        if self.log_ctr >= self.rows - 14:
             idx = self.log_list.find('\r\n')
             self.log_list = self.log_list[idx + 1:]
 

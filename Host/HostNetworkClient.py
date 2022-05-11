@@ -13,7 +13,7 @@ class NetworkClient:
         self.ready = True
         self.ping = False
         try:
-            self.tx_socket.bind((config['ip'], int(config['port'])))
+            self.tx_socket.bind((config['host'], int(config['port'])))
         except Exception as e:
             self.hdm.lg('HOST', 1, 'Ошибка привязки сокета: ' + str(e))
             self.ready = False
@@ -42,9 +42,10 @@ class NetworkClient:
                         start_time = time.time()
                         connection.sendall(bytes((255, 255, 255, 255, 255, 255, 255, 255)))
                         connection.recv(8)
-                        self.hdm.lg('HOST', 0, "---ping took " + str((time.time() - start_time)) + " seconds ---")
+                        self.hdm.lg('HOST', 0, "---ping took " + str((time.time() - start_time)-1) + " seconds ---")
                         self.ping = False
-                    connection.sendall(bytes(self.data))
+                    connection.sendall(bytes((self.data[0][0], self.data[0][1], self.data[1][0], self.data[1][1],
+                                              self.data[2], self.data[3], self.data[4][0], self.data[4][1])))
                     time.sleep(0.01)
             except Exception as e:
                 self.hdm.lg('HOST', 1, 'Ошибка подключения или передачи: ' + str(e))

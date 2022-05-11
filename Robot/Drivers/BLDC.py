@@ -15,9 +15,9 @@ class BLDC:
         if speed == 127:
             self.pwm.ChangeDutyCycle(7.0)
         elif speed > 127:
-            self.pwm.ChangeDutyCycle(7.0 + speed * 4.0 / 127)
+            self.pwm.ChangeDutyCycle(7.0 + (speed-127) * 2.0 / 128)
         else:
-            self.pwm.ChangeDutyCycle(7.0 - speed * 4.0 / 127)
+            self.pwm.ChangeDutyCycle(7.0 - (127-speed) * 2.0 / 128)
         
     def __exit__(self, exc_type, exc_val, exc_tb):
         GPIO.cleanup()
