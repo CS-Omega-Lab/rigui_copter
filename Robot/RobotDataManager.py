@@ -24,7 +24,7 @@ class DataManager:
         self.left_motor = BLDC(devices['left_motor'])
         self.right_motor = BLDC(devices['right_motor'])
 
-        # self.front_motor = DCMOTOR(devices['front_motor_0'], devices['front_motor_1'])
+        self.front_motor = DCMOTOR(devices['front_motor_0'], devices['front_motor_1'])
         # self.rear_motor = DCMOTOR(devices['rear_motor_0'], devices['rear_motor_1'])
         #
         # self.first_axis = ILYUSHA(self, devices['first_axis'])
@@ -52,7 +52,7 @@ class DataManager:
             cmd = self.nc.receive()
             self.left_motor.move(cmd[0])
             self.right_motor.move(cmd[1])
-            # self.front_motor.move(cmd[2])
+            self.front_motor.move(cmd[2])
             # self.rear_motor.move(cmd[3])
             # if cmd[4] == 0:
             #     self.first_axis.move(cmd[5])
