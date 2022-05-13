@@ -35,7 +35,7 @@ class KeyManager:
         self.fins_params = (127, 127)
         self.cam_params = (127, 127)
 
-        self.turn_k = 20
+        self.turn_k = 80
 
         self.w = False
         self.a = False

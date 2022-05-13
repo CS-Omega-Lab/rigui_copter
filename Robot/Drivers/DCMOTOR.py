@@ -8,7 +8,9 @@ class DCMOTOR:
         GPIO.setmode(GPIO.BOARD)
         self.PIN_A = int(first_pin)
         self.PIN_B = int(second_pin)
+        # print(first_pin)
         GPIO.setup(self.PIN_A, GPIO.OUT)
+        # print(second_pin)
         GPIO.setup(self.PIN_B, GPIO.OUT)
 
     def move(self, direction):

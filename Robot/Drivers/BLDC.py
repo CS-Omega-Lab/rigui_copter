@@ -7,6 +7,7 @@ class BLDC:
         GPIO.setwarnings(False)
         GPIO.setmode(GPIO.BOARD)
         self.pin = int(pin)
+        # print(pin)
         GPIO.setup(self.pin, GPIO.OUT)
         self.pwm = GPIO.PWM(self.pin, 50)
         self.pwm.start(7.0)
