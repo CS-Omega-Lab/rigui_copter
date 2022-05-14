@@ -6,6 +6,8 @@ import os
 
 class ILYUSHA:
     def __init__(self, rdm, ch_id):
+        self.poss = None
+        self.rdp = rdm
         if not os.path.exists(rdm.devices['uart-ttl_dev']):
             rdm.lg('ROBOT', 1, 'Устройство UART-TTL на '+rdm.devices['uart-ttl_dev']+' не подключено.')
         self.ser = serial.Serial(rdm.devices['uart-ttl_dev'], 115200)
@@ -36,7 +38,12 @@ class ILYUSHA:
         time.sleep(0.01)
         while self.ser.inWaiting():
             data.append(self.ser.read())
-        return [int.from_bytes(data[5], byteorder='big'), int.from_bytes(data[6], byteorder='big')]
+        datum = None
+        try:
+            datum = [int.from_bytes(data[5], byteorder='big'), int.from_bytes(data[6], byteorder='big')]
+        except Exception as e:
+            self.rdp.lg('ROBOT', 1, 'Устройство UART-TTL не прислало данные.')
+        return datum
 
     def move_speed(self, speed):
         self.ser.reset_input_buffer()
@@ -103,7 +110,10 @@ class ILYUSHA:
         self.motor_enable(2)
         if speed == 127 and not self.stop_flag:
             self.motor_enable(1)
-            self.move_position(self.read_position())
+            pos = self.read_position()
+            if pos is not None:
+                self.poss = pos
+            self.move_position(self.poss)
         elif speed > 127:
             self.move_speed(self.velocity)
         else:
