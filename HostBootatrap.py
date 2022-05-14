@@ -169,7 +169,7 @@ class Header:
         grid.add_column(justify="center", ratio=1)
         grid.add_column(justify="right")
         grid.add_row(
-            "[b] EXPLORA Robot Control V1.8"
+            "[b] EXPLORA Robot Control V2.0"
         )
         return Panel(grid,
                      border_style="bright_blue",
