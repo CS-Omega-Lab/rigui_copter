@@ -14,26 +14,29 @@ class DataManager:
         self.config = config
 
         self.mode = [
-            True,   # Режим управления: ручной (True) или полуавтомат (False)
-            True,   # Режим передачи данных для ручного режима: езда (True) или манипулятор (False)
-            100,    # Текущая максимальная скорость
-            0,      # Номер пресета
-            1,      # Длительность пресета
-            False   # PING
+            100  # Текущая максимальная скорость
         ]
 
         self.vals = [
-            (127, 127),  # Состояние двигателей гусениц
-            (127, 127),  # Состояние двигателей плавников
-            0,           # Текущая ось (для манипулятора)
-            127,         # Состояние двигателя оси (для манипулятора)
-            (127, 127)   # Параметры двигателей подвеса камеры
+            (127, 127),       # Состояние двигателей гусениц
+            (127, 127),       # Состояние двигателей плавников
+            (127, 127, 127),  # Состояние двигателей осей
+            (127, 127)        # Параметры двигателей подвеса камеры
+        ]
+
+        self.telemetry = [
+            100,  # Уровень сигнала
+            0.1,  # Пинг
+            100,  # Заряд аккумулятора
+            100,  # Температура
+            100   # Ток
         ]
 
         self.thread = Thread(target=self.update, daemon=True, args=())
-        self.keyboard_connector = KeyManager(self).start()
-        self.network_client = NetworkClient(self, config['general']).start()
-        self.camera_reader = ManualCameraReader(self).start()
+        self.keyboard_manager = KeyManager(self).start()
+        self.network_client = NetworkClient(self, config['network']).start()
+        # self.camera_reader = ManualCameraReader(self, config['network']['video_port_0']).start()
+        # self.camera_reader = ManualCameraReader(self, config['network']['video_port_1']).start()
 
     def get_logs(self):
         return self.log_list
@@ -43,6 +46,9 @@ class DataManager:
 
     def get_vals(self):
         return self.vals
+
+    def get_telemetry_data(self):
+        return self.telemetry
 
     def lg(self, src, typ, message):
         if typ == 0:
@@ -64,15 +70,12 @@ class DataManager:
             self.thread.start()
             self.lg('HOST', 0, 'Запуск DataManager: успешно.')
         except Exception as e:
-            self.lg('HOST', 1, 'Ошибка запуска DataManager: '+str(e))
+            self.lg('HOST', 1, 'Ошибка запуска DataManager: ' + str(e))
         return self
 
     def update(self):
         while True:
             time.sleep(0.01)
-            self.mode = self.keyboard_connector.get_mode()
-            self.vals = self.keyboard_connector.get_vals()
-            if self.mode[5]:
-                self.network_client.send_ping()
-                continue
+            self.mode = self.keyboard_manager.get_mode()
+            self.vals = self.keyboard_manager.get_vals()
             self.network_client.send_info(self.vals)

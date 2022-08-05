@@ -2,15 +2,16 @@ import subprocess
 
 
 class ManualCameraReader:
-    def __init__(self, srs):
-        self.srs = srs
+    def __init__(self, hdm, port):
+        self.hdm = hdm
         self.sp = subprocess
         self.proc = None
+        self.port = port
 
     def start(self):
         self.proc = self.sp.Popen(
-            ['gst-launch-1.0', 'udpsrc', 'port=5052', '!', 'application/x-rtp, encoding-name=JPEG, payload=26', '!',
+            ['gst-launch-1.0', 'udpsrc', 'port='+self.port, '!', 'application / x - rtp, encoding - name= JPEG, payload=26', '!',
              'rtpjpegdepay', '!', 'jpegdec', '!', 'd3d11videosink'],
             shell=True, stdout=subprocess.PIPE)
-        self.srs.lg('HOST', 0, 'Запуск обработчика стрима: успешно.')
+        self.hdm.lg('HOST', 0, 'Запуск обработчика стрима: успешно.')
         return self
