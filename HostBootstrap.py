@@ -9,7 +9,7 @@ from rich.panel import Panel
 from rich.table import Table
 from rich.text import Text
 from rich.live import Live
-from Host.HostDataManager import DataManager as DM
+from Host.HostDataManager import DataManager
 
 
 def make_layout(n) -> Layout:
@@ -33,7 +33,7 @@ class Header:
         grid.add_column(justify="center", ratio=1)
         grid.add_column(justify="right")
         grid.add_row(
-            "[b] EXPLORA Robot Control V2.1.7"
+            "[b] EXPLORA Robot Control V3.2.8"
         )
         return Panel(grid,
                      border_style="bright_blue",
@@ -69,9 +69,15 @@ class State:
         content.append("                 ")
         content.append("МАНИПУЛЯТОР:\r\n", style="bold blue u")
         content.append(" Скорость:            ", style="bold green")
-        content.append(str(self.mode[0] - 28) + "%")
+        content.append(str(self.mode[0] - 27) + "%")
+        if self.mode[0] == 127:
+            content.append("  ")
+        if 127 > self.mode[0] > 27:
+            content.append("   ")
+        if self.mode[0] <= 27:
+            content.append("    ")
 
-        content.append("   Продольная: ", style="bold green")
+        content.append("Продольная: ", style="bold green")
         if self.vals[2][0] > 127:
             content.append("↑\r\n", style="bold blue")
         elif self.vals[2][0] < 127:
@@ -81,12 +87,12 @@ class State:
 
         content.append(" Состояние гусениц:   ", style="bold green")
         if self.vals[0][0] > 127:
-            if self.vals[0][0] != self.mode[2] + 127:
+            if self.vals[0][0] != self.mode[0] + 127:
                 content.append("↑ ", style="bold yellow")
             else:
                 content.append("↑ ", style="bold blue")
         elif self.vals[0][0] < 127:
-            if self.vals[0][0] != 127 - self.mode[2]:
+            if self.vals[0][0] != 127 - self.mode[0]:
                 content.append("↓ ", style="bold yellow")
             else:
                 content.append("↓ ", style="bold blue")
@@ -94,12 +100,12 @@ class State:
             content.append("· ", style="bold white")
 
         if self.vals[0][1] > 127:
-            if self.vals[0][1] != self.mode[2] + 127:
+            if self.vals[0][1] != self.mode[0] + 127:
                 content.append("↑", style="bold yellow")
             else:
                 content.append("↑", style="bold blue")
         elif self.vals[0][1] < 127:
-            if self.vals[0][1] != 127 - self.mode[2]:
+            if self.vals[0][1] != 127 - self.mode[0]:
                 content.append("↓", style="bold yellow")
             else:
                 content.append("↓", style="bold blue")
@@ -153,14 +159,14 @@ class State:
 
 class Telemetry:
     def __init__(self, prv):
-        self.data = prv.get_telemetry_data()
+        self.data = prv.get_telemetry()
 
     def __rich__(self) -> Panel:
         content = Text()
         content.append("Уровень сигнала связи: ", style="bold green")
         content.append(str(self.data[0]) + "%\r\n")
         content.append("Время отклика:         ", style="bold green")
-        content.append(str(self.data[1]) + " с\r\n")
+        content.append(str(self.data[1]) + " мс\r\n")
         content.append("Заряд аккумулятора:    ", style="bold green")
         content.append(str(self.data[2]) + "%\r\n")
         content.append("Температура SoC:       ", style="bold green")
@@ -204,7 +210,7 @@ class Logs:
 config = configparser.ConfigParser()
 config.read("assets/explora.cfg")
 rows = os.get_terminal_size()[1]
-data_manager = DM(config, rows).start()
+data_manager = DataManager(config, rows).start()
 layout = make_layout(rows)
 layout["header"].update(Header())
 layout["logs"].update(Logs(data_manager))

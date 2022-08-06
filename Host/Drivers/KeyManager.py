@@ -151,22 +151,22 @@ class KeyManager:
         if e.event_type == 'up' and e.name == 'right':
             self.inc_speed()
 
-        if e.event_type == 'down' and e.name == '6':
+        if e.event_type == 'down' and e.name == '5':
             self.axis_params = [255, self.axis_params[1], self.axis_params[2]]
-        if e.event_type == 'up' and e.name == '6':
+        if e.event_type == 'up' and e.name == '5':
             self.axis_params = [127, self.axis_params[1], self.axis_params[2]]
-        if e.event_type == 'down' and e.name == '4':
+        if e.event_type == 'down' and e.name == '2':
             self.axis_params = [0, self.axis_params[1], self.axis_params[2]]
-        if e.event_type == 'up' and e.name == '4':
+        if e.event_type == 'up' and e.name == '2':
             self.axis_params = [127, self.axis_params[1], self.axis_params[2]]
 
-        if e.event_type == 'down' and e.name == '5':
+        if e.event_type == 'down' and e.name == '6':
             self.axis_params = [self.axis_params[0], 255, self.axis_params[2]]
-        if e.event_type == 'up' and e.name == '5':
+        if e.event_type == 'up' and e.name == '6':
             self.axis_params = [self.axis_params[0], 127, self.axis_params[2]]
-        if e.event_type == 'down' and e.name == '2':
+        if e.event_type == 'down' and e.name == '4':
             self.axis_params = [self.axis_params[0], 0, self.axis_params[2]]
-        if e.event_type == 'up' and e.name == '2':
+        if e.event_type == 'up' and e.name == '4':
             self.axis_params = [self.axis_params[0], 127, self.axis_params[2]]
 
         if e.event_type == 'down' and e.name == '3':
@@ -175,7 +175,7 @@ class KeyManager:
             self.axis_params = [self.axis_params[0], self.axis_params[1], 127]
         if e.event_type == 'down' and e.name == '1':
             self.axis_params = [self.axis_params[0], self.axis_params[1], 0]
-        if e.event_type == 'up' and e.name == '11':
+        if e.event_type == 'up' and e.name == '1':
             self.axis_params = [self.axis_params[0], self.axis_params[1], 127]
 
     def m_forward(self):

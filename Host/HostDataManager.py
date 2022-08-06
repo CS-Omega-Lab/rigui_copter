@@ -1,9 +1,10 @@
 import time
 from threading import Thread
 
-from Host.HostNetworkClient import NetworkClient
+from Host.HostNetworkManager import NetworkDataClient
+from Host.HostNetworkManager import NetworkCommandClient
 from Host.Drivers.KeyManager import KeyManager
-from Host.ManualCameraReader import ManualCameraReader
+from Host.CameraReader import CameraReader
 
 
 class DataManager:
@@ -12,31 +13,34 @@ class DataManager:
         self.log_ctr = 0
         self.rows = rows
         self.config = config
+        self.routine_timer = 0
+        self.init_passed = False
 
         self.mode = [
-            100  # Текущая максимальная скорость
+            127  # Текущая максимальная скорость
         ]
 
         self.vals = [
-            (127, 127),       # Состояние двигателей гусениц
-            (127, 127),       # Состояние двигателей плавников
+            (127, 127),  # Состояние двигателей гусениц
+            (127, 127),  # Состояние двигателей плавников
             (127, 127, 127),  # Состояние двигателей осей
-            (127, 127)        # Параметры двигателей подвеса камеры
+            (127, 127)  # Параметры двигателей подвеса камеры
         ]
 
         self.telemetry = [
-            100,  # Уровень сигнала
-            0.1,  # Пинг
-            100,  # Заряд аккумулятора
-            100,  # Температура
-            100   # Ток
+            '-',  # Уровень сигнала
+            '-',  # Пинг
+            '-',  # Заряд аккумулятора
+            '-',  # Температура
+            '-'   # Ток
         ]
 
         self.thread = Thread(target=self.update, daemon=True, args=())
         self.keyboard_manager = KeyManager(self).start()
-        self.network_client = NetworkClient(self, config['network']).start()
-        # self.camera_reader = ManualCameraReader(self, config['network']['video_port_0']).start()
-        # self.camera_reader = ManualCameraReader(self, config['network']['video_port_1']).start()
+        self.data_client = NetworkDataClient(self).start()
+        self.command_client = NetworkCommandClient(self).start()
+        self.camera_reader = CameraReader(self, config['network']['video_port_0']).start()
+        self.camera_reader = CameraReader(self, config['network']['video_port_1']).start()
 
     def get_logs(self):
         return self.log_list
@@ -47,7 +51,7 @@ class DataManager:
     def get_vals(self):
         return self.vals
 
-    def get_telemetry_data(self):
+    def get_telemetry(self):
         return self.telemetry
 
     def lg(self, src, typ, message):
@@ -76,6 +80,11 @@ class DataManager:
     def update(self):
         while True:
             time.sleep(0.01)
+            if self.routine_timer < 10:
+                self.routine_timer += 1
+            else:
+                self.telemetry = self.command_client.get_telemetry()
+                self.routine_timer = 0
             self.mode = self.keyboard_manager.get_mode()
             self.vals = self.keyboard_manager.get_vals()
-            self.network_client.send_info(self.vals)
+            self.data_client.send_info(self.vals)

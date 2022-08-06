@@ -1,13 +1,16 @@
 import time
 # noinspection PyUnresolvedReferences
-from RPi import GPIO
+# from RPi import GPIO
 from threading import Thread
 
-from Robot.RobotNetworkClient import NetworkClient as NC
-from Robot.Drivers.BLDC import BLDC
-from Robot.Drivers.ILYUSHA import ILYUSHA
-from Robot.Drivers.SERVO import SERVO
-from Robot.Drivers.DCMOTOR import DCMOTOR
+from Robot.CameraStreamer import CameraStreamer
+from Robot.RobotNetworkManager import NetworkDataClient
+from Robot.RobotNetworkManager import NetworkCommandClient
+from Robot.TelemetryManager import TelemetryManager
+# from Robot.Drivers.BLDC import BLDC
+# from Robot.Drivers.ILYUSHA import ILYUSHA
+# from Robot.Drivers.SERVO import SERVO
+# from Robot.Drivers.DCMOTOR import DCMOTOR
 
 from rich.console import Console
 
@@ -15,55 +18,74 @@ from rich.console import Console
 class DataManager:
     def __init__(self, config):
         self.config = config
+        self.telemetry = []
+        self.init_data = [
+            0,
+            0,
+            0
+        ]
+
+        self.motors_summary = 0
 
         self.cls = Console()
-        self.nc = NC(self)
-        devices = config['devices']
-        self.devices = devices
+        self.data_client = NetworkDataClient(self)
+        self.command_client = NetworkCommandClient(self)
 
-        self.left_motor = BLDC(devices['left_motor'])
-        self.right_motor = BLDC(devices['right_motor'])
+        self.telemetry_manager = TelemetryManager(self).start()
 
-        self.front_motor = DCMOTOR(devices['front_motor_0'], devices['front_motor_1'])
-        self.rear_motor = DCMOTOR(devices['rear_motor_0'], devices['rear_motor_1'])
+        self.devices = config['devices']
 
-        self.first_axis = ILYUSHA(self, devices['first_axis'])
-        self.second_axis = ILYUSHA(self, devices['second_axis'])
-        self.third_axis = SERVO(devices['third_axis'])
-        self.fourth_axis = DCMOTOR(devices['fourth_axis_0'], devices['fourth_axis_1'])
+        # self.left_motor = BLDC(self.devices['left_motor'])
+        # self.right_motor = BLDC(self.devices['right_motor'])
+        #
+        # self.front_motor = DCMOTOR(self.devices['front_motor_0'], self.devices['front_motor_1'])
+        # self.rear_motor = DCMOTOR(self.devices['rear_motor_0'], self.devices['rear_motor_1'])
 
-        self.camera_x = SERVO(devices['camera_x'])
-        self.camera_y = SERVO(devices['camera_y'])
+        # self.first_axis = ILYUSHA(self, self.devices['first_axis'])
+        # self.second_axis = ILYUSHA(self, self.devices['second_axis'])
+        # self.third_axis = SERVO(self.devices['third_axis'])
+        # self.fourth_axis = DCMOTOR(self.devices['fourth_axis_0'], self.devices['fourth_axis_1'])
+        #
+        # self.camera_x = SERVO(self.devices['camera_x'])
+        # self.camera_y = SERVO(self.devices['camera_y'])
+
+        self.chassis_camera_streamer = CameraStreamer(self, 0).start()
+        self.man_camera_streamer = CameraStreamer(self, 1).start()
 
         self.thread = Thread(target=self.operate, daemon=True, args=())
 
-    def instance(self):
-        return self
-
     def start(self):
-        self.nc.start()
+        self.data_client.start()
+        self.command_client.start()
         self.thread.start()
         return self
+
+    def update_init_data(self, key, val):
+        self.init_data[key] = val
+
+    def get_init_data(self):
+        return self.init_data
+
+    def get_motors_summary(self):
+        return self.motors_summary
 
     def operate(self):
         time.sleep(2)
         while True:
             time.sleep(0.01)
-            cmd = self.nc.receive()
-            self.left_motor.move(cmd[0])
-            self.right_motor.move(cmd[1])
-            self.front_motor.move(cmd[2])
-            self.rear_motor.move(cmd[3])
-            if cmd[4] == 0:
-                self.first_axis.move(cmd[5])
-            if cmd[4] == 1:
-                self.second_axis.move(cmd[5])
-            if cmd[4] == 2:
-                self.third_axis.move(cmd[5])
-            if cmd[4] == 3:
-                self.fourth_axis.move(cmd[5])
-            self.camera_x.move(cmd[6])
-            self.camera_y.move(cmd[7])
+            self.command_client.send_telemetry(self.telemetry_manager.get_telemetry())
+            data = self.data_client.receive()
+            self.motors_summary = data[0]+data[1]+data[2]+data[3]
+            # self.left_motor.move(data[0])
+            # self.right_motor.move(data[1])
+            # self.front_motor.move(data[2])
+            # self.rear_motor.move(data[3])
+            # self.first_axis.move(data[4])
+            # self.second_axis.move(data[4])
+            # self.third_axis.move(data[5])
+            # self.fourth_axis.move(data[6])
+            # self.camera_x.move(data[7])
+            # self.camera_y.move(data[8])
 
     def lg(self, src, typ, message):
         if typ == 0:
