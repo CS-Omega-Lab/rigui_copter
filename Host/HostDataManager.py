@@ -13,7 +13,6 @@ class DataManager:
         self.log_ctr = 0
         self.rows = rows
         self.config = config
-        self.routine_timer = 0
         self.init_passed = False
 
         self.mode = [
@@ -80,11 +79,7 @@ class DataManager:
     def update(self):
         while True:
             time.sleep(0.01)
-            if self.routine_timer < 10:
-                self.routine_timer += 1
-            else:
-                self.telemetry = self.command_client.get_telemetry()
-                self.routine_timer = 0
+            self.telemetry = self.command_client.get_telemetry()
             self.mode = self.keyboard_manager.get_mode()
             self.vals = self.keyboard_manager.get_vals()
             self.data_client.send_info(self.vals)

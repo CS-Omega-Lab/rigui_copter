@@ -1,3 +1,4 @@
+import random
 import re
 import subprocess
 import time
@@ -48,7 +49,7 @@ class TelemetryManager:
             soc_temperature = 43
 
             motor_summary = self.rdm.get_motors_summary()
-            diff = abs(motor_summary-512)/10
+            diff = abs(motor_summary) / 10
             load_current = int(diff)
 
             self.telemetry = [
@@ -59,6 +60,4 @@ class TelemetryManager:
                 load_current
             ]
 
-            time.sleep(1)
-
-
+            time.sleep(0.2)

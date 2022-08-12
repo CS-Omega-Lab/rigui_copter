@@ -47,15 +47,13 @@ class NetworkCommandClient:
     def __init__(self, hdm):
         self.config = hdm.config
         self.hdm = hdm
-        self.command = [
-            2
-        ]
+        self.command = 2
         self.telemetry = [
             '-',  # Уровень сигнала
             '-',  # Пинг
             '-',  # Заряд аккумулятора
             '-',  # Температура
-            '-'   # Ток
+            '-'  # Ток
         ]
         self.mx_thread = Thread(target=self.mx_void, daemon=True, args=())
         self.mx_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -78,6 +76,34 @@ class NetworkCommandClient:
     def get_telemetry(self):
         return self.telemetry
 
+    def print_init_info(self, data):
+        if data[0] == 1:
+            self.hdm.lg('ROBOT', 0,
+                        'Камера по адресу ' + self.config['devices'][
+                            'video_dev_0'] + ' подключена.')
+        else:
+            self.hdm.lg('ROBOT', 1,
+                        'Камера по адресу ' + self.config['devices'][
+                            'video_dev_0'] + ' не подключена (code: ' + str(data[0]) + ').')
+        if data[1] == 1:
+            self.hdm.lg('ROBOT', 0,
+                        'Камера по адресу ' + self.config['devices'][
+                            'video_dev_1'] + ' подключена.')
+        else:
+            self.hdm.lg('ROBOT', 1,
+                        'Камера по адресу ' + self.config['devices'][
+                            'video_dev_1'] + ' не подключена (code: ' + str(data[1]) + ').')
+        if data[2] == 1:
+            self.hdm.lg('ROBOT', 0,
+                        'Устройство UART-TTL на ' + self.config['devices'][
+                            'uart-ttl_dev'] + ' подключено.')
+        else:
+            self.hdm.lg('ROBOT', 1,
+                        'Устройство UART-TTL на ' + self.config['devices'][
+                            'uart-ttl_dev'] + ' не подключено (code: ' + str(data[2]) + ').')
+
+        self.hdm.lg('ROBOT', 0, 'Робот готов.')
+
     def mx_void(self):
         self.mx_socket.listen(1)
         while True:
@@ -86,43 +112,20 @@ class NetworkCommandClient:
             try:
                 self.hdm.lg('HOST', 0, '[MX] Подключён клиент: ' + str(client_address) + ".")
                 while True:
-                    if self.command[0] == 1:
+                    if self.command == 1:
                         connection.sendall(bytes([1]))
                         data = connection.recv(5)
                         self.telemetry = list(data)
-                    if self.command[0] == 2:
+                    if self.command == 2:
                         connection.sendall(bytes([2]))
                         data = connection.recv(3)
                         data = list(data)
-                        if data[0] == 1:
-                            self.hdm.lg('ROBOT', 0,
-                                        'Камера по адресу ' + self.config['devices'][
-                                            'video_dev_0'] + ' подключена.')
-                        else:
-                            self.hdm.lg('ROBOT', 1,
-                                        'Камера по адресу ' + self.config['devices'][
-                                            'video_dev_0'] + ' не подключена (code: '+str(data[0])+').')
-                        if data[1] == 1:
-                            self.hdm.lg('ROBOT', 0,
-                                        'Камера по адресу ' + self.config['devices'][
-                                            'video_dev_1'] + ' подключена.')
-                        else:
-                            self.hdm.lg('ROBOT', 1,
-                                        'Камера по адресу ' + self.config['devices'][
-                                            'video_dev_1'] + ' не подключена (code: '+str(data[1])+').')
-                        if data[2] == 1:
-                            self.hdm.lg('ROBOT', 0,
-                                        'Устройство UART-TTL на ' + self.config['devices'][
-                                            'uart-ttl_dev'] + ' подключено.')
-                        else:
-                            self.hdm.lg('ROBOT', 1,
-                                        'Устройство UART-TTL на ' + self.config['devices'][
-                                            'uart-ttl_dev'] + ' не подключено (code: '+str(data[2])+').')
-                        self.command[0] = 1
-                    time.sleep(1)
+                        self.print_init_info(data)
+                        self.command = 1
+                    time.sleep(0.2)
             except Exception as e:
                 self.hdm.lg('HOST', 1, '[MX] Ошибка подключения или передачи: ' + str(e))
-                self.command[0] = 2
+                self.command = 2
                 self.telemetry = [
                     '-',  # Уровень сигнала
                     '-',  # Пинг

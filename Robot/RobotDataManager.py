@@ -75,7 +75,7 @@ class DataManager:
             time.sleep(0.01)
             self.command_client.send_telemetry(self.telemetry_manager.get_telemetry())
             data = self.data_client.receive()
-            self.motors_summary = data[0]+data[1]+data[2]+data[3]
+            self.motors_summary = abs(data[0] - 127) + abs(data[1] - 127) + abs(data[2] - 127) + abs(data[3] - 127)
             # self.left_motor.move(data[0])
             # self.right_motor.move(data[1])
             # self.front_motor.move(data[2])
