@@ -30,8 +30,9 @@ class TelemetryManager:
         while True:
             # p = subprocess.Popen("iwconfig", stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             # out = p.stdout.read().decode()
-            # m = re.findall('(wlan[0-9]+).*?Signal level=(-[0-9]+) dBm', out, re.DOTALL)
-            # signal_level = m[0]
+            # m = re.findall('(wlan1+).*?Signal level=()', out, re.DOTALL)
+            # print(m)
+            # signal_level = int(abs(m[0]))
             signal_level = 99
 
             response_list = pythonping.ping(self.rdm.config['network']['host'], size=10, count=2)
