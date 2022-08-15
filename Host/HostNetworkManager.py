@@ -85,14 +85,6 @@ class NetworkCommandClient:
             self.hdm.lg('ROBOT', 1,
                         'Камера по адресу ' + self.config['devices'][
                             'video_dev_0'] + ' не подключена (code: ' + str(data[0]) + ').')
-        if data[1] == 1:
-            self.hdm.lg('ROBOT', 0,
-                        'Камера по адресу ' + self.config['devices'][
-                            'video_dev_1'] + ' подключена.')
-        else:
-            self.hdm.lg('ROBOT', 1,
-                        'Камера по адресу ' + self.config['devices'][
-                            'video_dev_1'] + ' не подключена (code: ' + str(data[1]) + ').')
         if data[2] == 1:
             self.hdm.lg('ROBOT', 0,
                         'Устройство UART-TTL на ' + self.config['devices'][

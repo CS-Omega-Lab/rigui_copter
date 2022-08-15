@@ -7,7 +7,7 @@ from Robot.RobotDataManager import DataManager
 config = configparser.ConfigParser()
 config.read("assets/explora.cfg")
 
-os.system('cls')
+os.system('clear')
 print('Запускаюсь...')
 
 data_manager = DataManager(config).start()

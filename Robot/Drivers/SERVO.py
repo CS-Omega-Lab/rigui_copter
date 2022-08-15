@@ -26,15 +26,15 @@ class SERVO:
         time.sleep(1)
         while True:
             if self.speed > 127:
-                self.position = self.position + 0.25
+                self.position = self.position + 0.15
                 if self.position > 11.5:
                     self.position = 11.5
                 self.pwm.ChangeDutyCycle(self.position)
             elif self.speed < 127:
-                self.position = self.position - 0.25
+                self.position = self.position - 0.15
                 if self.position < 4:
                     self.position = 4
                 self.pwm.ChangeDutyCycle(self.position)
             else:
                 self.pwm.ChangeDutyCycle(0)
-            time.sleep(0.2)
+            time.sleep(0.1)

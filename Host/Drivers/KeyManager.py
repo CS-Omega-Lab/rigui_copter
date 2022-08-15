@@ -87,13 +87,13 @@ class KeyManager:
             if e.event_type == 'up' and e.name == '7':
                 self.cam_params = [127, self.cam_params[1]]
 
-        if e.event_type == 'down' and e.name == 'o':
-            self.fins_params = [self.fins_params[0], 255]
-        if e.event_type == 'up' and e.name == 'o':
-            self.fins_params = [self.fins_params[0], 127]
         if e.event_type == 'down' and e.name == 'l':
-            self.fins_params = [self.fins_params[0], 0]
+            self.fins_params = [self.fins_params[0], 255]
         if e.event_type == 'up' and e.name == 'l':
+            self.fins_params = [self.fins_params[0], 127]
+        if e.event_type == 'down' and e.name == 'o':
+            self.fins_params = [self.fins_params[0], 0]
+        if e.event_type == 'up' and e.name == 'o':
             self.fins_params = [self.fins_params[0], 127]
 
         if e.event_type == 'down' and e.name == 'k':

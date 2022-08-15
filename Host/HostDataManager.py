@@ -38,8 +38,7 @@ class DataManager:
         self.keyboard_manager = KeyManager(self).start()
         self.data_client = NetworkDataClient(self).start()
         self.command_client = NetworkCommandClient(self).start()
-        self.camera_reader = CameraReader(self, config['network']['video_port_0']).start()
-        self.camera_reader = CameraReader(self, config['network']['video_port_1']).start()
+        self.camera_reader = CameraReader(self).start()
 
     def get_logs(self):
         return self.log_list
