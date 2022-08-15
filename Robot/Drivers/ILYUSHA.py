@@ -22,6 +22,7 @@ class ILYUSHA:
         while self.flag:
             self.ping()
             time.sleep(0.1)
+        rdm.lg('ROBOT', 0, 'Устройство UART-TTL на ' + rdm.devices['uart-ttl_dev'] + ', ID=' + ch_id + ' готово.')
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.motor_enable(0)

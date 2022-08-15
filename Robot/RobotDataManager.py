@@ -21,7 +21,6 @@ class DataManager:
         self.telemetry = []
         self.init_data = [
             0,
-            0,
             0
         ]
 
@@ -49,7 +48,7 @@ class DataManager:
         self.camera_x = SERVO(self.devices['camera_x'])
         self.camera_y = SERVO(self.devices['camera_y'])
 
-        # self.camera_streamer = CameraStreamer(self).start()
+        self.camera_streamer = CameraStreamer(self, 0).start()
 
         self.thread = Thread(target=self.operate, daemon=True, args=())
 
