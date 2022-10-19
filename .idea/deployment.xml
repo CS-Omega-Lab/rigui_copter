@@ -3,6 +3,13 @@
   <component name="PublishConfigData" autoUpload="Always" serverName="rpi@local" remoteFilesAllowedToDisappearOnAutoupload="false" confirmBeforeUploading="false" autoUploadExternalChanges="true">
     <option name="confirmBeforeUploading" value="false" />
     <serverData>
+      <paths name="jet@192.168.88.252:22 password">
+        <serverdata>
+          <mappings>
+            <mapping local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
       <paths name="rpi@local">
         <serverdata>
           <mappings>

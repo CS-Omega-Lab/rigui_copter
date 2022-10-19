@@ -42,11 +42,11 @@ class DataManager:
 
         self.first_axis = ILYUSHA(self, self.devices['first_axis'])
         self.second_axis = ILYUSHA(self, self.devices['second_axis'])
-        self.third_axis = SERVO(self.devices['third_axis'])
+        self.third_axis = SERVO(self.devices['third_axis'], False)
         self.fourth_axis = DCMOTOR(self.devices['fourth_axis_0'], self.devices['fourth_axis_1'])
 
-        self.camera_x = SERVO(self.devices['camera_x'])
-        self.camera_y = SERVO(self.devices['camera_y'])
+        self.camera_x = SERVO(self.devices['camera_x'], True)
+        self.camera_y = SERVO(self.devices['camera_y'], True)
 
         self.camera_streamer = CameraStreamer(self, 0).start()
 
