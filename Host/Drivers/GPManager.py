@@ -66,16 +66,16 @@ class GPManager(object):
             self.CameraX = 127 + self.lj_x if abs(self.lj_x) > 20 else 127
             self.CameraY = 127 + self.lj_y if abs(self.lj_y) > 20 else 127
 
-            self.ManipulatorX = (254 if self.rj_x > 0 else 0) if abs(self.rj_x) > 90 else 127
-            self.ManipulatorY = (254 if self.rj_y > 0 else 0) if abs(self.rj_y) > 90 else 127
+            self.ManipulatorY = (254 if self.rj_x > 0 else 0) if abs(self.rj_x) > 90 else 127
+            self.ManipulatorX = (254 if self.rj_y > 0 else 0) if abs(self.rj_y) > 90 else 127
             self.ManipulatorZ = 127 - self.X + self.B
             self.ManipulatorV = 127 + self.lp_x
 
-            self.MotorX = 127 + (- self.lt if self.lb else self.lt)
-            self.MotorY = 127 + (- self.rt if self.rb else self.rt)
+            self.MotorY = 127 + (- self.lt if self.lb else self.lt)
+            self.MotorX = 127 + (- self.rt if self.rb else self.rt)
 
-            self.ConsoleF = 127 + (self.lp_y if self.Y else - self.lp_y)
-            self.ConsoleR = 127 + (- self.lp_y if self.Y else self.lp_y)
+            self.ConsoleF = 127 + (self.lp_y if self.Y else - self.lp_y) if self.lp_y > 0 else 127
+            self.ConsoleR = 127 + (- self.lp_y if self.Y else self.lp_y) if self.lp_y < 0 else 127
 
             events = get_gamepad()
             for event in events:

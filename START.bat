@@ -1,1 +1,2 @@
-start /MAX py .\HostBootstrap.py
+pause
+py ./HostBootstrap.py

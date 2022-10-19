@@ -13,7 +13,7 @@ for i in range(0, 12):
 config = configparser.ConfigParser()
 config.read("assets/explora.cfg")
 
-os.system('clear')
+#os.system('clear')
 print('Запускаюсь...')
 
 data_manager = DataManager(config).start()

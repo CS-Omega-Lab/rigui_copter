@@ -48,10 +48,9 @@ class State:
     def __rich__(self) -> Panel:
         content = Text()
 
-        content.append("Контроль робота: ", style="bold green")
-        content.append("РУЧНОЙ", style="bold blue u")
-        content.append("  АВТОНОМНЫЙ\r\n", style="bold white")
-        content.append("Состояние камеры на корпусе: ", style="bold green")
+        content.append("Режим: ", style="bold green")
+        content.append("РУЧНОЙ\r\n", style="bold blue u")
+        content.append("Камера: ", style="bold green")
         if self.vals[3][0] > 127:
             content.append("H↑ ", style="bold blue")
         elif self.vals[3][0] < 127:
@@ -65,19 +64,7 @@ class State:
         else:
             content.append("V·\r\n", style="bold white")
 
-        content.append("ПЛАТФОРМА:", style="bold blue u")
-        content.append("                 ")
-        content.append("МАНИПУЛЯТОР:\r\n", style="bold blue u")
-        content.append(" Скорость:            ", style="bold green")
-        content.append(str(self.mode[0] - 27) + "%")
-        if self.mode[0] == 127:
-            content.append("  ")
-        if 127 > self.mode[0] > 27:
-            content.append("   ")
-        if self.mode[0] <= 27:
-            content.append("    ")
-
-        content.append("Продольная: ", style="bold green")
+        content.append("                 AX1: ", style="bold green")
         if self.vals[2][0] > 127:
             content.append("↑\r\n", style="bold blue")
         elif self.vals[2][0] < 127:
@@ -85,7 +72,7 @@ class State:
         else:
             content.append("·\r\n", style="bold white")
 
-        content.append(" Состояние гусениц:   ", style="bold green")
+        content.append("Привод:   ", style="bold green")
         if self.vals[0][0] > 127:
             if self.vals[0][0] != self.mode[0] + 127:
                 content.append("↑ ", style="bold yellow")
@@ -112,7 +99,7 @@ class State:
         else:
             content.append("·", style="bold white")
 
-        content.append("   Вращение:   ", style="bold green")
+        content.append("    AX2: ", style="bold green")
         if self.vals[2][1] > 127:
             content.append("↑\r\n", style="bold blue")
         elif self.vals[2][1] < 127:
@@ -120,7 +107,7 @@ class State:
         else:
             content.append("·\r\n", style="bold white")
 
-        content.append(" Состояние плавников: ", style="bold green")
+        content.append("Плавники: ", style="bold green")
 
         if self.vals[1][0] > 127:
             content.append("↑ ", style="bold blue")
@@ -136,10 +123,18 @@ class State:
         else:
             content.append("·", style="bold white")
 
-        content.append("   Схват:      ", style="bold green")
+        content.append("    AX3: ", style="bold green")
         if self.vals[2][2] > 127:
             content.append("↑\r\n", style="bold blue")
         elif self.vals[2][2] < 127:
+            content.append("↓\r\n", style="bold blue")
+        else:
+            content.append("·\r\n", style="bold white")
+
+        content.append("                 AX4: ", style="bold green")
+        if self.vals[2][3] > 127:
+            content.append("↑\r\n", style="bold blue")
+        elif self.vals[2][3] < 127:
             content.append("↓\r\n", style="bold blue")
         else:
             content.append("·\r\n", style="bold white")
