@@ -2,15 +2,8 @@
 <project version="4">
   <component name="WebServers">
     <option name="servers">
-      <webServer id="cb5b92c8-88a7-4cf5-b367-0d3e661ede28" name="rtc_pi">
-        <fileTransfer accessType="SFTP" host="192.168.31.200" port="22" sshConfigId="8e82c730-fbb1-4f55-b0eb-6c763abbeacf" sshConfig="hxps@192.168.31.200:22 password">
-          <advancedOptions>
-            <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
-          </advancedOptions>
-        </fileTransfer>
-      </webServer>
-      <webServer id="d1f22ebf-62fe-4239-8fc8-7b3d4a934730" name="rtc_pi_self">
-        <fileTransfer accessType="SFTP" host="192.168.31.200" port="22" sshConfigId="8e82c730-fbb1-4f55-b0eb-6c763abbeacf" sshConfig="hxps@192.168.31.200:22 password">
+      <webServer id="36898f96-cd11-43e8-b49d-03d161b42060" name="rpi@local">
+        <fileTransfer accessType="SFTP" host="192.168.1.101" port="22" sshConfigId="c082eec6-a2c6-4245-9551-773e3bee5271" sshConfig="pi@192.168.1.101:22 password">
           <advancedOptions>
             <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
           </advancedOptions>

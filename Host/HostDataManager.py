@@ -3,7 +3,8 @@ from threading import Thread
 
 from Host.HostNetworkManager import NetworkDataClient
 from Host.HostNetworkManager import NetworkCommandClient
-from Host.Drivers.KeyManager import KeyManager
+# from Host.Drivers.KeyManager import KeyManager
+from Host.Drivers.GPManager import GPManager
 from Host.CameraReader import CameraReader
 
 
@@ -22,7 +23,7 @@ class DataManager:
         self.vals = [
             (127, 127),  # Состояние двигателей гусениц
             (127, 127),  # Состояние двигателей плавников
-            (127, 127, 127),  # Состояние двигателей осей
+            (127, 127, 127, 127),  # Состояние двигателей осей
             (127, 127)  # Параметры двигателей подвеса камеры
         ]
 
@@ -35,7 +36,8 @@ class DataManager:
         ]
 
         self.thread = Thread(target=self.update, daemon=True, args=())
-        self.keyboard_manager = KeyManager(self).start()
+        # self.keyboard_manager = KeyManager(self).start()
+        self.gamepad_manager = GPManager(self).start()
         self.data_client = NetworkDataClient(self).start()
         self.command_client = NetworkCommandClient(self).start()
         self.camera_reader = CameraReader(self).start()
@@ -79,6 +81,6 @@ class DataManager:
         while True:
             time.sleep(0.01)
             self.telemetry = self.command_client.get_telemetry()
-            self.mode = self.keyboard_manager.get_mode()
-            self.vals = self.keyboard_manager.get_vals()
+            self.mode = self.gamepad_manager.get_mode()
+            self.vals = self.gamepad_manager.get_vals()
             self.data_client.send_info(self.vals)

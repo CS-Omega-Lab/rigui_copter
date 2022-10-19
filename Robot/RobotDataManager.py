@@ -74,16 +74,16 @@ class DataManager:
             self.command_client.send_telemetry(self.telemetry_manager.get_telemetry())
             data = self.data_client.receive()
             self.motors_summary = abs(data[0] - 127) + abs(data[1] - 127) + abs(data[2] - 127) + abs(data[3] - 127)
-            self.left_motor.move(data[1])
-            self.right_motor.move(data[0])
+            self.left_motor.move(data[0])
+            self.right_motor.move(data[1])
             self.front_motor.move(data[2])
             self.rear_motor.move(data[3])
             self.first_axis.move(data[4])
-            self.second_axis.move(data[4])
+            self.second_axis.move(data[5])
             self.third_axis.move(data[6])
-            self.fourth_axis.move(data[5])
-            self.camera_x.move(data[7])
-            self.camera_y.move(data[8])
+            self.fourth_axis.move(data[7])
+            self.camera_x.move(data[8])
+            self.camera_y.move(data[9])
 
     def lg(self, src, typ, message):
         if typ == 0:

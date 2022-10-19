@@ -1,5 +1,6 @@
 # noinspection PyUnresolvedReferences
 from RPi import GPIO
+import time
 
 
 class BLDC:

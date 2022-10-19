@@ -9,7 +9,7 @@ class CameraReader:
 
     def start(self):
         self.proc = self.sp.Popen(
-            ['gst-launch-1.0', 'udpsrc', 'port=5060 !',
+            ['gst-launch-1.0', 'udpsrc', 'port=5060', '!',
              'application/x-rtp, encoding-name=JPEG, payload=26', '!',
              'rtpjpegdepay', '!', 'jpegdec', '!', 'd3d11videosink'],
             shell=True, stdout=subprocess.PIPE)
