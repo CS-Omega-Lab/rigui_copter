@@ -8,9 +8,6 @@ from Host.Drivers.GPManager import GPManager
 from Host.CameraReader import CameraReader
 from Common.AddressManager import AddressManager
 
-from netifaces import interfaces, ifaddresses, AF_INET
-import socket
-
 
 class DataManager:
     def __init__(self, config, lgm, rows):

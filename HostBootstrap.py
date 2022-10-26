@@ -34,7 +34,7 @@ class Header:
         grid.add_column(justify="center", ratio=1)
         grid.add_column(justify="right")
         grid.add_row(
-            "[b] EXPLORA Robot Control V4.0.0"
+            "[b] EXPLORA Robot Control V4.2.0"
         )
         return Panel(grid,
                      border_style="bright_blue",
