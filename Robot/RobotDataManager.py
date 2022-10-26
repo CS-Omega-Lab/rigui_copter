@@ -53,10 +53,17 @@ class DataManager:
         self.thread = Thread(target=self.operate, daemon=True, args=())
 
     def start(self):
+
+
         self.data_client.start()
         self.command_client.start()
         self.thread.start()
         return self
+
+    def get_network_data(self):
+        data = {
+            'host': "192."
+        }
 
     def update_init_data(self, key, val):
         self.init_data[key] = val

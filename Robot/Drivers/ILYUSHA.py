@@ -43,7 +43,7 @@ class ILYUSHA:
             self.ser.write(bytes([2]))
             self.ser.write(bytes([255 - (self.ID + 4 + 2 + 36 + 2) % 256]))
             time.sleep(0.01)
-            while self.ser.inWaiting():
+            while self.ser.in_waiting():
                 data.append(self.ser.read())
             datum = None
             try:
@@ -71,7 +71,7 @@ class ILYUSHA:
                 self.ser.write(bytes([255]))
                 self.ser.write(bytes([255 - (self.ID + 5 + 3 + 32 + 255 + speed + 255) % 256]))
             time.sleep(0.01)
-            while self.ser.inWaiting():
+            while self.ser.in_waiting():
                 self.ser.reset_input_buffer()
 
     def move_position(self, position):
@@ -87,7 +87,7 @@ class ILYUSHA:
             self.ser.write(bytes([position[1]]))
             self.ser.write(bytes([255 - (self.ID + 5 + 3 + 30 + position[1] + position[0]) % 256]))
             time.sleep(0.01)
-            while self.ser.inWaiting():
+            while self.ser.in_waiting():
                 self.ser.reset_input_buffer()
 
     def motor_enable(self, mode):
@@ -102,7 +102,7 @@ class ILYUSHA:
             self.ser.write(bytes([mode]))
             self.ser.write(bytes([255 - (self.ID + 4 + 3 + 24 + mode) % 256]))
             time.sleep(0.01)
-            while self.ser.inWaiting():
+            while self.ser.in_waiting():
                 self.ser.reset_input_buffer()
 
     def ping(self):
@@ -114,7 +114,7 @@ class ILYUSHA:
             self.ser.write(bytes([1]))
             self.ser.write(bytes([255 - (self.ID + 2 + 1) % 256]))
             time.sleep(0.01)
-            while self.ser.inWaiting():
+            while self.ser.in_waiting():
                 self.ser.reset_input_buffer()
                 self.flag = False
 

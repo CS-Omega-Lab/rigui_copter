@@ -7,6 +7,9 @@ class NetworkDataClient:
     def __init__(self, hdm):
         self.config = hdm.config
         self.hdm = hdm
+        self.lgm = hdm.lgm
+        self.remote_address = hdm.remote_address
+        self.data_port = int(self.config['network']['data_port'])
         self.data = [
             (127, 127),  # Состояние двигателей гусениц
             (127, 127),  # Состояние двигателей плавников
@@ -16,16 +19,21 @@ class NetworkDataClient:
         self.tx_thread = Thread(target=self.tx_void, daemon=True, args=())
         self.tx_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.ready = True
+        self.lgm.dlg('HOST', 3, '[TX] Подключаюсь к сокету: ' + str((self.remote_address, self.data_port)))
         try:
-            self.tx_socket.connect((self.config['network']['host'], int(self.config['network']['data_port'])))
+            self.tx_socket.connect((self.remote_address, self.data_port))
         except Exception as e:
+            self.lgm.dlg('HOST', '1', '[TX] Ошибка подключения к сокету: ' + str(e))
             self.hdm.lg('HOST', 1, '[TX] Ошибка подключения к сокету: ' + str(e))
             self.ready = False
 
     def start(self):
         if self.ready:
             self.tx_thread.start()
-            self.hdm.lg('HOST', 0, '[TX] Подключение к сокету (' + self.config['network']['data_port'] + '): успешно.')
+            self.hdm.lg('HOST', 0,
+                        '[TX] Подключение к сокету ' + str((self.remote_address, self.data_port)) + ': успешно.')
+        else:
+            self.hdm.set_boot_lock()
         return self
 
     def send_info(self, data):
@@ -47,7 +55,10 @@ class NetworkCommandClient:
     def __init__(self, hdm):
         self.config = hdm.config
         self.hdm = hdm
+        self.lgm = hdm.lgm
         self.command = 2
+        self.remote_address = hdm.remote_address
+        self.command_port = int(self.config['network']['command_port'])
         self.telemetry = [
             '-',  # Уровень сигнала
             '-',  # Пинг
@@ -58,16 +69,21 @@ class NetworkCommandClient:
         self.mx_thread = Thread(target=self.mx_void, daemon=True, args=())
         self.mx_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.ready = True
+        self.lgm.dlg('HOST', 3, '[MX] Подключаюсь к сокету: ' + str((self.remote_address, self.command_port)))
         try:
-            self.mx_socket.connect((self.config['network']['host'], int(self.config['network']['command_port'])))
+            self.mx_socket.connect((self.remote_address, self.command_port))
         except Exception as e:
-            self.hdm.lg('HOST', 1, '[TX] Ошибка подключения к сокету: ' + str(e))
+            self.lgm.dlg('HOST', 1, '[MX] Ошибка подключения к сокету: ' + str(e))
+            self.hdm.lg('HOST', 1, '[MX] Ошибка подключения к сокету: ' + str(e))
             self.ready = False
 
     def start(self):
         if self.ready:
             self.mx_thread.start()
-            self.hdm.lg('HOST', 0, '[MX] Подключение к сокету (' + self.config['network']['command_port'] + '): успешно.')
+            self.hdm.lg('HOST', 0,
+                        '[MX] Подключение к сокету ' + str((self.remote_address, self.command_port)) + ': успешно.')
+        else:
+            self.hdm.set_boot_lock()
         return self
 
     def send_command(self, data):

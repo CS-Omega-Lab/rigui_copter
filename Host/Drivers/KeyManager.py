@@ -4,7 +4,7 @@ from threading import Thread
 import keyboard
 
 # Driving:
-# wasd,ikol гусли и плавники
+# wasd, ikol гусли и плавники
 # 123456 манипулятор
 # 789 камера
 # left, right скорость
@@ -23,14 +23,13 @@ class KeyManager:
 
         self.hdm = hdm
 
-        # Максимальная скорость
-        self.max_speed = 127
-
         # Параметры моторов и осей, 127 - среднее положение
         self.motor_params = (127, 127)
         self.fins_params = (127, 127)
         self.cam_params = (127, 127)
         self.axis_params = (127, 127, 127)
+
+        self.max_speed = 127
 
         self.turn_k = 80
 
@@ -42,9 +41,6 @@ class KeyManager:
 
         self.thread = Thread(target=self.update, daemon=True, args=())
 
-    def get_mode(self):
-        return [self.max_speed]
-
     def get_vals(self):
         return [
             self.motor_params,
@@ -54,7 +50,12 @@ class KeyManager:
         ]
 
     def start(self):
-        self.thread.start()
+        try:
+            self.thread.start()
+        except Exception as e:
+            self.hdm.lgm.dlg('HOST', '1', 'Ошибка запуска KeyManager: '+str(e))
+            self.hdm.set_boot_lock()
+        self.hdm.lgm.dlg('HOST', 3, 'Запуск KeyManager: успешно.')
         self.hdm.lg('HOST', 0, 'Запуск KeyManager: успешно.')
         return self
 
@@ -216,4 +217,3 @@ class KeyManager:
         keyboard.hook_key('8', self.detect_key)
         keyboard.hook_key('9', self.detect_key)
         keyboard.wait()
-        # time.sleep(0.001)

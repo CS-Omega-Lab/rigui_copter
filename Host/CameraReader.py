@@ -1,17 +1,16 @@
-import subprocess
+import subprocess as sp
 
 
 class CameraReader:
     def __init__(self, hdm):
         self.hdm = hdm
-        self.sp = subprocess
-        self.proc = None
 
     def start(self):
-        self.proc = self.sp.Popen(
-            ['gst-launch-1.0', 'udpsrc', 'port=5060', '!',
+        port = str('port='+self.hdm.config["network"]["video_port"])
+        sp.Popen(
+            ['gst-launch-1.0', 'udpsrc', port, '!',
              'application/x-rtp,encoding-name=JPEG,payload=26', '!',
              'rtpjpegdepay', '!', 'jpegdec', '!', 'd3d11videosink'],
-            shell=True, stdout=subprocess.PIPE)
+            shell=True, stdout=sp.PIPE)
         self.hdm.lg('HOST', 0, 'Запуск обработчика стрима: успешно.')
         return self

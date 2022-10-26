@@ -10,6 +10,7 @@ from rich.table import Table
 from rich.text import Text
 from rich.live import Live
 from Host.HostDataManager import DataManager
+from Common.LogManager import LogManager
 
 
 def make_layout(n) -> Layout:
@@ -42,7 +43,6 @@ class Header:
 
 class State:
     def __init__(self, prv):
-        self.mode = prv.get_mode()
         self.vals = prv.get_vals()
 
     def __rich__(self) -> Panel:
@@ -74,28 +74,16 @@ class State:
 
         content.append("Привод:   ", style="bold green")
         if self.vals[0][0] > 127:
-            if self.vals[0][0] != self.mode[0] + 127:
-                content.append("↑ ", style="bold yellow")
-            else:
-                content.append("↑ ", style="bold blue")
+            content.append("↑ ", style="bold blue")
         elif self.vals[0][0] < 127:
-            if self.vals[0][0] != 127 - self.mode[0]:
-                content.append("↓ ", style="bold yellow")
-            else:
-                content.append("↓ ", style="bold blue")
+            content.append("↓ ", style="bold blue")
         else:
             content.append("· ", style="bold white")
 
         if self.vals[0][1] > 127:
-            if self.vals[0][1] != self.mode[0] + 127:
-                content.append("↑", style="bold yellow")
-            else:
-                content.append("↑", style="bold blue")
+            content.append("↑", style="bold blue")
         elif self.vals[0][1] < 127:
-            if self.vals[0][1] != 127 - self.mode[0]:
-                content.append("↓", style="bold yellow")
-            else:
-                content.append("↓", style="bold blue")
+            content.append("↓", style="bold blue")
         else:
             content.append("·", style="bold white")
 
@@ -202,10 +190,15 @@ class Logs:
         return content_panel
 
 
+lgm = LogManager()
+lgm.dlg('HOST', 3, 'Запускаюсь...')
 config = configparser.ConfigParser()
 config.read("assets/explora.cfg")
 rows = os.get_terminal_size()[1]
-data_manager = DataManager(config, rows).start()
+data_manager = DataManager(config, lgm, rows).start()
+while data_manager.in_waiting():
+    time.sleep(0.1)
+os.system('cls')
 layout = make_layout(rows)
 layout["header"].update(Header())
 layout["logs"].update(Logs(data_manager))

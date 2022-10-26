@@ -44,8 +44,14 @@ class GPManager(object):
         self._monitor_thread.daemon = True
 
     def start(self):
-        self._monitor_thread.start()
-        self.hdm.lg('HOST', 0, 'Запуск GPManager: успешно.')
+        try:
+            get_gamepad()
+            self._monitor_thread.start()
+            self.hdm.lgm.dlg('HOST', 3, 'Запуск GPManager: успешно.')
+            self.hdm.lg('HOST', 0, 'Запуск GPManager: успешно.')
+        except Exception as e:
+            self.hdm.lgm.dlg('HOST', 1, 'Ошибка запуска GPManager: '+str(e))
+            self.hdm.set_boot_lock()
         return self
 
     def get_vals(self):
@@ -55,10 +61,6 @@ class GPManager(object):
             (self.ManipulatorX, self.ManipulatorY, self.ManipulatorZ, self.ManipulatorV),
             (self.CameraX, self.CameraY)
         ]
-
-    @staticmethod
-    def get_mode():
-        return [127]
 
     def _monitor_controller(self):
         while True:
