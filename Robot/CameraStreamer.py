@@ -3,16 +3,17 @@ import os
 
 
 class CameraStreamer:
-    def __init__(self, rdm, client):
+    def __init__(self, rdm, client, lgm):
         self.rdm = rdm
+        self.lgm = lgm
         self.allowed = True
         self.client = client
         if not os.path.exists(rdm.devices['video_dev']):
-            rdm.lg('ROBOT', 1, 'Устройство v4l2 на ' + rdm.devices['video_dev'] + ' не подключено.')
+            self.lgm.dlg('ROBOT', 1, 'Устройство v4l2 на ' + rdm.devices['video_dev'] + ' не подключено.')
             self.rdm.update_init_data(0, 2)
             self.allowed = False
         else:
-            rdm.lg('ROBOT', 0, 'Устройство v4l2 на ' + rdm.devices['video_dev'] + ' подключено.')
+            self.lgm.dlg('ROBOT', 0, 'Устройство v4l2 на ' + rdm.devices['video_dev'] + ' подключено.')
             self.rdm.update_init_data(0, 1)
 
     def start(self):

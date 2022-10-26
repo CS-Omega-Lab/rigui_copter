@@ -5,7 +5,8 @@ import time
 
 
 class SERVO:
-    def __init__(self, pin, mode):
+    def __init__(self, pin, mode, lgm):
+        self.lgm = lgm
         GPIO.setwarnings(False)
         GPIO.setmode(GPIO.BOARD)
         self.speed = 127

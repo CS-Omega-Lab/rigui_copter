@@ -6,6 +6,8 @@ from Host.HostNetworkManager import NetworkCommandClient
 from Host.Drivers.KeyManager import KeyManager
 from Host.Drivers.GPManager import GPManager
 from Host.CameraReader import CameraReader
+from Common.AddressManager import AddressManager
+
 from netifaces import interfaces, ifaddresses, AF_INET
 import socket
 
@@ -72,17 +74,19 @@ class DataManager:
         return self.telemetry
 
     def get_addresses(self):
-        key = str(self.config['network']['subnet'])
-        for ifaceName in interfaces():
-            addresses = [i['addr'] for i in ifaddresses(ifaceName).setdefault(AF_INET, [{'addr': 'No IP addr'}])]
-            for addr in addresses:
-                if key in addr:
-                    self.local_address = addr
-        try:
-            name = socket.gethostbyname("rpi.local")
-            self.remote_address = name
-        except Exception as e:
-            self.lgm.dlg('HOST', 1, 'Ошибка сетевого обнаружения, RPI не в сети ('+str(e)+')')
+        am = AddressManager(self.lgm)
+        subnet = str(self.config['network']['subnet'])
+        local_address = am.get_local_address_by_subnet(subnet)
+        remote_address = am.get_remote_address_by_name("rpi.local")
+
+        if local_address:
+            self.local_address = local_address
+        else:
+            self.set_boot_lock()
+
+        if remote_address:
+            self.remote_address = remote_address
+        else:
             self.set_boot_lock()
 
     def start(self):

@@ -5,23 +5,24 @@ import os
 
 
 class ILYUSHA:
-    def __init__(self, rdm, ch_id):
+    def __init__(self, rdm, ch_id, lgm):
+        self.lgm = lgm
         self.poss = None
         self.rdm = rdm
         self.available = False
         if not os.path.exists(rdm.devices['uart-ttl_dev']):
-            rdm.lg('ROBOT', 1, 'Устройство UART-TTL на '+rdm.devices['uart-ttl_dev']+' не подключено.')
+            lgm.dlg('ROBOT', 1, 'Устройство UART-TTL на '+rdm.devices['uart-ttl_dev']+' не подключено.')
             self.rdm.update_init_data(1, 2)
         else:
             self.available = True
             self.ser = serial.Serial(rdm.devices['uart-ttl_dev'], 115200)
-            rdm.lg('ROBOT', 0, 'Устройство UART-TTL на ' + rdm.devices['uart-ttl_dev'] + ' подключено.')
+            lgm.dlg('ROBOT', 0, 'Устройство UART-TTL на ' + rdm.devices['uart-ttl_dev'] + ' подключено.')
             self.rdm.update_init_data(1, 1)
-            rdm.lg('ROBOT', 0, 'Пингую устройство UART-TTL на ' + rdm.devices['uart-ttl_dev'] + ', ID=' + ch_id + '...')
+            lgm.dlg('ROBOT', 0, 'Пингую устройство UART-TTL на ' + rdm.devices['uart-ttl_dev'] + ', ID=' + ch_id + '...')
             while self.flag:
                 self.ping()
                 time.sleep(0.1)
-            rdm.lg('ROBOT', 0, 'Устройство UART-TTL на ' + rdm.devices['uart-ttl_dev'] + ', ID=' + ch_id + ' готово.')
+            lgm.dlg('ROBOT', 0, 'Устройство UART-TTL на ' + rdm.devices['uart-ttl_dev'] + ', ID=' + ch_id + ' готово.')
         self.ID = int(ch_id)
         self.flag = True
         self.velocity = 50
@@ -49,7 +50,7 @@ class ILYUSHA:
             try:
                 datum = [int.from_bytes(data[5], byteorder='big'), int.from_bytes(data[6], byteorder='big')]
             except Exception as e:
-                self.rdm.lg('ROBOT', 1, 'Устройство UART-TTL не прислало данные.')
+                self.lgm.dlg('ROBOT', 1, 'Устройство UART-TTL не прислало данные.')
             return datum
         return []
 

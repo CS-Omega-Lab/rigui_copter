@@ -3,7 +3,8 @@ from RPi import GPIO
 
 
 class DCMOTOR:
-    def __init__(self, first_pin, second_pin):
+    def __init__(self, first_pin, second_pin, lgm):
+        self.lgm = lgm
         GPIO.setwarnings(False)
         GPIO.setmode(GPIO.BOARD)
         self.PIN_A = int(first_pin)

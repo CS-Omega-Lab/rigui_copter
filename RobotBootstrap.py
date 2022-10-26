@@ -2,21 +2,22 @@
 import time
 import os
 import configparser
+from netifaces import interfaces, ifaddresses, AF_INET
 
 from Robot.RobotDataManager import DataManager
+from Common.LogManager import LogManager
+from Common.AddressManager import AddressManager
 
-print('Жду сеть...')
-for i in range(0, 12):
-    print(i*10, 'сек')
-    time.sleep(10)
-
+lgm = LogManager()
 config = configparser.ConfigParser()
 config.read("assets/explora.cfg")
 
-#os.system('clear')
-print('Запускаюсь...')
+lgm.dlg("ROBOT", 3, "Запускаюсь...")
 
-data_manager = DataManager(config).start()
+am = AddressManager(lgm)
+am.wait_for_network(config['network']['subnet'])
+
+data_manager = DataManager(config, lgm).start()
 
 data_manager.lg('ROBOT', 0, 'Робот готов.')
 

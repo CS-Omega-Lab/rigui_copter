@@ -7,8 +7,9 @@ import pythonping
 
 
 class TelemetryManager:
-    def __init__(self, rdm):
+    def __init__(self, rdm, lgm):
         self.rdm = rdm
+        self.lgm = lgm
         self.telemetry = [
             100,  # Уровень сигнала
             1,    # Пинг
@@ -33,7 +34,7 @@ class TelemetryManager:
             # m = re.findall('(wlan1+).*?Signal level=()', out, re.DOTALL)
             # print(m)
             # signal_level = int(abs(m[0]))
-            signal_level = 99
+            signal_level = 0
 
             response_list = pythonping.ping(self.rdm.config['network']['host'], size=10, count=2)
             ping = response_list.rtt_avg_ms
@@ -47,7 +48,7 @@ class TelemetryManager:
             # out = p.stdout.read().decode()
             # m = re.findall(r'\d+', out)
             # soc_temperature = m[0]
-            soc_temperature = 43
+            soc_temperature = 0
 
             motor_summary = self.rdm.get_motors_summary()
             diff = abs(motor_summary) / 10
