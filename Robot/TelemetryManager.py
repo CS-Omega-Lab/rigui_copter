@@ -11,16 +11,18 @@ class TelemetryManager:
         self.rdm = rdm
         self.lgm = lgm
         self.telemetry = [
-            100,  # Уровень сигнала
-            1,    # Пинг
-            100,  # Заряд аккумулятора
-            100,  # Температура
-            100   # Ток
+            0,  # Уровень сигнала
+            0,    # Пинг
+            0,  # Заряд аккумулятора
+            0,  # Температура
+            0   # Ток
         ]
+        self.host = ''
 
         self.thread = Thread(target=self.update, daemon=True, args=())
 
-    def start(self):
+    def start(self, host):
+        self.host = host
         self.thread.start()
         return self
 
@@ -36,7 +38,7 @@ class TelemetryManager:
             # signal_level = int(abs(m[0]))
             signal_level = 0
 
-            response_list = pythonping.ping(self.rdm.config['network']['host'], size=10, count=2)
+            response_list = pythonping.ping(self.host, size=10, count=2)
             ping = response_list.rtt_avg_ms
             if ping > 255:
                 ping = 255

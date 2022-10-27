@@ -19,7 +19,7 @@ am.wait_for_network(config['network']['subnet'])
 
 data_manager = DataManager(config, lgm).start()
 
-data_manager.lg('ROBOT', 0, 'Робот готов.')
+lgm.dlg('ROBOT', 3, 'Робот готов.')
 
 while True:
     time.sleep(10)

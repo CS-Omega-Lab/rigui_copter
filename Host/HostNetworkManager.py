@@ -23,7 +23,7 @@ class NetworkDataClient:
         try:
             self.tx_socket.connect((self.remote_address, self.data_port))
         except Exception as e:
-            self.lgm.dlg('HOST', '1', '[TX] Ошибка подключения к сокету: ' + str(e))
+            self.lgm.dlg('HOST', 1, '[TX] Ошибка подключения к сокету: ' + str(e))
             self.hdm.lg('HOST', 1, '[TX] Ошибка подключения к сокету: ' + str(e))
             self.ready = False
 
@@ -31,7 +31,7 @@ class NetworkDataClient:
         if self.ready:
             self.tx_thread.start()
             self.hdm.lg('HOST', 0,
-                        '[TX] Подключение к сокету ' + str((self.remote_address, self.data_port)) + ': успешно.')
+                        '[TX] Подключение к ' + str((self.remote_address, self.data_port)) + ': успешно.')
         else:
             self.hdm.set_boot_lock()
         return self
@@ -81,7 +81,7 @@ class NetworkCommandClient:
         if self.ready:
             self.mx_thread.start()
             self.hdm.lg('HOST', 0,
-                        '[MX] Подключение к сокету ' + str((self.remote_address, self.command_port)) + ': успешно.')
+                        '[MX] Подключение к ' + str((self.remote_address, self.command_port)) + ': успешно.')
         else:
             self.hdm.set_boot_lock()
         return self
@@ -96,11 +96,11 @@ class NetworkCommandClient:
         if data[0] == 1:
             self.hdm.lg('ROBOT', 0,
                         'Камера по адресу ' + self.config['devices'][
-                            'video_dev_0'] + ' подключена.')
+                            'video_dev'] + ' подключена.')
         else:
             self.hdm.lg('ROBOT', 1,
                         'Камера по адресу ' + self.config['devices'][
-                            'video_dev_0'] + ' не подключена (code: ' + str(data[0]) + ').')
+                            'video_dev'] + ' не подключена (code: ' + str(data[0]) + ').')
         if data[1] == 1:
             self.hdm.lg('ROBOT', 0,
                         'Устройство UART-TTL на ' + self.config['devices'][

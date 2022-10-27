@@ -35,13 +35,15 @@ class NetworkDataClient:
             connection, client_address = self.rx_socket.accept()
             try:
                 self.lgm.dlg('HOST', 0, '[RX] Подключён клиент: ' + str(client_address) + ".")
-                self.rdm.set_remote_address(str(client_address))
+                self.rdm.set_remote_address(str(client_address[0]))
+                self.rdm.lazy_process_start()
                 while True:
                     data = connection.recv(10)
                     self.last_cmd = list(data)
                     time.sleep(0.008)
             except Exception as e:
                 self.lgm.dlg('HOST', 1, '[RX] Ошибка подключения или передачи: ' + str(e))
+                self.rdm.drop_remote_address()
             time.sleep(1)
 
 
@@ -55,12 +57,12 @@ class NetworkCommandClient:
         self.mx_thread = Thread(target=self.mx_void, daemon=True, args=())
         self.mx_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.ready = True
-        self.lgm.dlg('ROBOT', 0, '[RX] Открываю сокет: '+str((self.local_address, int(self.config['command_port']))))
+        self.lgm.dlg('ROBOT', 3, '[MX] Открываю сокет: '+str((self.local_address, int(self.config['command_port']))))
         try:
             self.mx_socket.bind((self.local_address, int(self.config['command_port'])))
-            self.lgm.dlg('ROBOT', 0, '[RX] Сокет открыт: '+str((self.local_address, int(self.config['command_port']))))
+            self.lgm.dlg('ROBOT', 3, '[MX] Сокет открыт: '+str((self.local_address, int(self.config['command_port']))))
         except Exception as e:
-            self.lgm.dlg('ROBOT', 1, '[RX] Ошибка привязки сокета: ' + str(e))
+            self.lgm.dlg('ROBOT', 1, '[MX] Ошибка привязки сокета: ' + str(e))
             self.ready = False
 
     def start(self):
@@ -88,4 +90,5 @@ class NetworkCommandClient:
                     time.sleep(0.008)
             except Exception as e:
                 self.lgm.dlg('HOST', 1, '[MX] Ошибка подключения или передачи: ' + str(e))
+                self.rdm.drop_remote_address()
             time.sleep(1)

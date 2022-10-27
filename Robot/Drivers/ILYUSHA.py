@@ -10,11 +10,16 @@ class ILYUSHA:
         self.poss = None
         self.rdm = rdm
         self.available = False
+        self.flag = True
+        self.ID = int(ch_id)
+        self.velocity = 50
+        self.stop_flag = False
+        self.boot_time = 0
+        self.got_ping = True
         if not os.path.exists(rdm.devices['uart-ttl_dev']):
             lgm.dlg('ROBOT', 1, 'Устройство UART-TTL на '+rdm.devices['uart-ttl_dev']+' не подключено.')
             self.rdm.update_init_data(1, 2)
         else:
-            self.available = True
             self.ser = serial.Serial(rdm.devices['uart-ttl_dev'], 115200)
             lgm.dlg('ROBOT', 0, 'Устройство UART-TTL на ' + rdm.devices['uart-ttl_dev'] + ' подключено.')
             self.rdm.update_init_data(1, 1)
@@ -22,11 +27,15 @@ class ILYUSHA:
             while self.flag:
                 self.ping()
                 time.sleep(0.1)
-            lgm.dlg('ROBOT', 0, 'Устройство UART-TTL на ' + rdm.devices['uart-ttl_dev'] + ', ID=' + ch_id + ' готово.')
-        self.ID = int(ch_id)
-        self.flag = True
-        self.velocity = 50
-        self.stop_flag = False
+                self.boot_time += 1
+                if self.boot_time >= 30:
+                    lgm.dlg('ROBOT', 1,
+                            'Устройство UART-TTL на ' + rdm.devices['uart-ttl_dev'] + ', ID=' + ch_id + ' не ответило.')
+                    self.got_ping = False
+                    break
+            if self.got_ping:
+                lgm.dlg('ROBOT', 0, 'Устройство UART-TTL на ' + rdm.devices['uart-ttl_dev'] + ', ID=' + ch_id + ' готово.')
+                self.available = True
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.motor_enable(0)

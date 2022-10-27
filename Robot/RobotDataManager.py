@@ -33,7 +33,7 @@ class DataManager:
         self.data_client = NetworkDataClient(self, self.lgm)
         self.command_client = NetworkCommandClient(self, self.lgm)
 
-        self.telemetry_manager = TelemetryManager(self, self.lgm).start()
+        self.telemetry_manager = TelemetryManager(self, self.lgm)
 
         self.devices = config['devices']
 
@@ -59,7 +59,7 @@ class DataManager:
             self.lgm.dlg('HOST', 1, 'Ошибка запуска DataManager: boot_lock. Запуск невозможен.')
 
     def start(self):
-        if self.boot_lock:
+        if not self.boot_lock:
             self.data_client.start()
             self.command_client.start()
             self.thread.start()
@@ -67,6 +67,9 @@ class DataManager:
 
     def set_boot_lock(self):
         self.boot_lock = True
+
+    def drop_remote_address(self):
+        self.remote_address = None
 
     def set_remote_address(self, remote):
         self.remote_address = remote
@@ -90,11 +93,12 @@ class DataManager:
     def get_motors_summary(self):
         return self.motors_summary
 
-    def lazy_stream_start(self):
+    def lazy_process_start(self):
         time.sleep(2)
         while not self.remote_address:
             time.sleep(1)
         self.camera_streamer = CameraStreamer(self, 0, self.lgm).start()
+        self.telemetry_manager.start(self.remote_address)
 
     def operate(self):
         time.sleep(2)
@@ -113,11 +117,3 @@ class DataManager:
             self.fourth_axis.move(data[7])
             self.camera_x.move(data[8])
             self.camera_y.move(data[9])
-
-    def lg(self, src, typ, message):
-        if typ == 0:
-            self.cls.print("[blue bold]\[" + src + "][/][red bold]::[/][white bold]INFO[/][red bold]::[/]" + message)
-        elif typ == 1:
-            self.cls.print("[blue bold]\[" + src + "][/][red bold]::[/][red bold]ERROR[/][red bold]::[/]" + message)
-        else:
-            self.cls.print("[blue bold]\[" + src + "][/][red bold]::[/][yellow bold]WARN[/][red bold]::[/]" + message)

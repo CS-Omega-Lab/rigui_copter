@@ -43,7 +43,7 @@ class DataManager:
         if config['general']['control'] == "gamepad":
             self.input_manager = GPManager(self).start()
         elif config['general']['control'] == "keyboard":
-            self.keyboard_manager = KeyManager(self).start()
+            self.input_manager = KeyManager(self).start()
         else:
             self.lgm.dlg('HOST', 1, 'Неизвестный способ ввода: '+str(config['general']['control']))
             self.boot_lock = True

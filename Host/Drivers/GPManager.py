@@ -76,8 +76,8 @@ class GPManager(object):
             self.MotorY = 127 + (- self.lt if self.lb else self.lt)
             self.MotorX = 127 + (- self.rt if self.rb else self.rt)
 
-            self.ConsoleF = 127 + (self.lp_y if self.Y else - self.lp_y) if self.lp_y > 0 else 127
-            self.ConsoleR = 127 + (- self.lp_y if self.Y else self.lp_y) if self.lp_y < 0 else 127
+            self.ConsoleR = 127 + (self.lp_y if self.Y else - self.lp_y) if self.lp_y > 0 else 127
+            self.ConsoleF = 127 + (- self.lp_y if self.Y else self.lp_y) if self.lp_y < 0 else 127
 
             events = get_gamepad()
             for event in events:

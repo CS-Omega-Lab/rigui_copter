@@ -21,7 +21,7 @@ class AddressManager:
                         local_addr = addr
             if local_addr:
                 net_available = True
-                self.lgm.dlg("ROBOT", 0, "Сетевое подключение обнаружено.")
+                self.lgm.dlg("ROBOT", 3, "Сетевое подключение обнаружено.")
             time.sleep(1)
 
     def get_local_address_by_subnet(self, subnet):
@@ -41,7 +41,8 @@ class AddressManager:
     def get_remote_address_by_name(self, name):
         det_name = str(name)
         try:
-            addr = socket.gethostbyname(det_name)
+            #addr = socket.gethostbyname(det_name)
+            addr = '192.168.1.132'
             return addr
         except Exception as e:
             self.lgm.dlg('HOST', 1, 'Ошибка сетевого обнаружения, RPI не в сети (' + str(e) + ')')
