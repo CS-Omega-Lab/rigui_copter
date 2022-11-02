@@ -4,14 +4,15 @@ import time
 from threading import Thread
 
 from Common.AddressManager import AddressManager
-from Robot.CameraStreamer import CameraStreamer
+from Robot.Drivers.VideoStreamer import VideoStreamer
+from Robot.QReader import QReader
 from Robot.RobotNetworkManager import NetworkDataClient
 from Robot.RobotNetworkManager import NetworkCommandClient
 from Robot.TelemetryManager import TelemetryManager
-from Robot.Drivers.BLDCMOTOR import BLDCMOTOR
-from Robot.Drivers.ILYUSHA import ILYUSHA
-from Robot.Drivers.SERVO import SERVO
-from Robot.Drivers.DCMOTOR import DCMOTOR
+from Robot.Drivers.BLDCMotor import BLDCMOTOR
+from Robot.Drivers.Ilyusha import ILYUSHA
+from Robot.Drivers.Servo import SERVO
+from Robot.Drivers.DCMotor import DCMOTOR
 
 
 class DataManager:
@@ -27,6 +28,8 @@ class DataManager:
         self.local_address = None
         self.remote_address = None
         self.boot_lock = False
+
+        self.video_stream_state = False
 
         self.get_addresses()
 
@@ -52,9 +55,11 @@ class DataManager:
             self.camera_x = SERVO(self.devices['camera_x'], True, self.lgm)
             self.camera_y = SERVO(self.devices['camera_y'], True, self.lgm)
 
+            self.qr_reader = QReader(self)
+
             self.thread = Thread(target=self.operate, daemon=True, args=())
 
-            self.camera_streamer = None
+            self.video_streamer = None
         else:
             self.lgm.dlg('HOST', 1, 'Ошибка запуска DataManager: boot_lock. Запуск невозможен.')
 
@@ -97,7 +102,7 @@ class DataManager:
         time.sleep(2)
         while not self.remote_address:
             time.sleep(1)
-        self.camera_streamer = CameraStreamer(self, 0, self.lgm).start()
+        self.video_streamer = VideoStreamer(self).start()
         self.telemetry_manager.start(self.remote_address)
 
     def operate(self):
@@ -117,3 +122,14 @@ class DataManager:
             self.fourth_axis.move(data[7])
             self.camera_x.move(data[8])
             self.camera_y.move(data[9])
+            if data[10] > 127:
+                if not self.video_stream_state:
+                    self.video_streamer.stop()
+                    time.sleep(2)
+                    self.qr_reader.start()
+            else:
+                if self.video_stream_state:
+                    self.qr_reader.stop()
+                    time.sleep(2)
+                    self.video_streamer.start()
+

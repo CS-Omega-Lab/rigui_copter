@@ -15,7 +15,7 @@ sudo apt-get install libgstreamer1.0-dev \
      gstreamer1.0-gl \
      gstreamer1.0-gtk3
 pip3 install --upgrade --user pip
-pip3 install rich pythonping netifaces
+pip3 install rich pythonping netifaces pyzbar
 git clone https://github.com/Hexerpowers/rigui_legacy
 cd rigui_legacy
 sudo python3 install.py
@@ -31,7 +31,7 @@ https://gstreamer.freedesktop.org/data/pkg/windows/1.20.4/msvc/gstreamer-1.0-dev
 Затем модули Python:
 ```shell
 pip3 install --upgrade --user pip
-pip3 install rich pythonping netifaces inputs keyboard py_win_keyboard_layout win32api win32con
+pip3 install rich pythonping netifaces inputs keyboard py_win_keyboard_layout
 ```
 
 ## Для запуска системы управления на компьютере используем
