@@ -122,14 +122,14 @@ class DataManager:
             self.fourth_axis.move(data[7])
             self.camera_x.move(data[8])
             self.camera_y.move(data[9])
-            if data[10] > 127:
-                if not self.video_stream_state:
-                    self.video_streamer.stop()
-                    time.sleep(2)
-                    self.qr_reader.start()
-            else:
-                if self.video_stream_state:
-                    self.qr_reader.stop()
-                    time.sleep(2)
-                    self.video_streamer.start()
+            # if data[10] > 127:
+            #     if not self.video_stream_state:
+            #         self.video_streamer.stop()
+            #         time.sleep(2)
+            #         self.qr_reader.start()
+            # else:
+            #     if self.video_stream_state:
+            #         self.qr_reader.stop()
+            #         time.sleep(2)
+            #         self.video_streamer.start()
 

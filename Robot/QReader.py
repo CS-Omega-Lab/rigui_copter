@@ -12,7 +12,7 @@ class QReader:
         self.lgm = rdm.lgm
         self.host = rdm.local_address
         self.thread = Thread(target=self.stream, daemon=True, args=())
-        self.reader = VideoReader(rdm.config['devices']['video_dev']).start()
+        self.reader = VideoReader(rdm.config['devices']['video_dev'])
         self.counter = 0
         self.decoded = None
         self.found = False
@@ -126,6 +126,7 @@ class QReader:
                    b'Content-Type: image/jpeg\r\n\r\n' + image + b'\r\n\r\n')
 
     def stream(self):
+        self.reader.start()
         self.app = Flask(__name__)
 
         @self.app.route('/')

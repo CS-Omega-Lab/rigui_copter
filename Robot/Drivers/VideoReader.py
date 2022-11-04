@@ -6,13 +6,15 @@ class VideoReader:
     def __init__(self, source):
         self.thread = Thread(target=self.update, daemon=True, args=())
         self.stream = None
+        self.source = source
         self.grabbed = False
-        self.frame = cv2.imread('../assets/test_qr.jpg')
-        self.stream = cv2.VideoCapture(source)
-        self.stream.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
-        self.stream.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
+        self.frame = cv2.imread('assets/test_qr.jpg')
+        self.stream = None
 
     def start(self):
+        self.stream = cv2.VideoCapture(self.source)
+        self.stream.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
+        self.stream.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
         self.thread.start()
         print("StreamReader started")
         return self

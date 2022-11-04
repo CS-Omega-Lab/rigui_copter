@@ -37,7 +37,10 @@ class KeyManager:
         self.a = False
         self.s = False
         self.d = False
-        self.ax_switch = False
+        self.cam_ax_switch = False
+
+        self.man_ax_1_switch = False
+        self.man_ax_2_switch = False
 
         self.thread = Thread(target=self.update, daemon=True, args=())
 
@@ -65,11 +68,21 @@ class KeyManager:
 
     def detect_key(self, e):
         if e.event_type == 'down' and e.name == '8':
-            self.ax_switch = True
+            self.cam_ax_switch = True
         if e.event_type == 'up' and e.name == '8':
-            self.ax_switch = False
+            self.cam_ax_switch = False
 
-        if self.ax_switch:
+        if e.event_type == 'down' and e.name == '2':
+            self.man_ax_1_switch = True
+        if e.event_type == 'up' and e.name == '2':
+            self.man_ax_1_switch = False
+
+        if e.event_type == 'down' and e.name == '5':
+            self.man_ax_2_switch = True
+        if e.event_type == 'up' and e.name == '5':
+            self.man_ax_2_switch = False
+
+        if self.cam_ax_switch:
             if e.event_type == 'down' and e.name == '9':
                 self.cam_params = [self.cam_params[0], 255]
             if e.event_type == 'up' and e.name == '9':
@@ -152,32 +165,43 @@ class KeyManager:
         if e.event_type == 'up' and e.name == 'right':
             self.inc_speed()
 
-        if e.event_type == 'down' and e.name == '5':
-            self.axis_params = [255, self.axis_params[1], self.axis_params[2], self.axis_params[3]]
-        if e.event_type == 'up' and e.name == '5':
-            self.axis_params = [127, self.axis_params[1], self.axis_params[2], self.axis_params[3]]
-        if e.event_type == 'down' and e.name == '2':
-            self.axis_params = [0, self.axis_params[1], self.axis_params[2], self.axis_params[3]]
-        if e.event_type == 'up' and e.name == '2':
-            self.axis_params = [127, self.axis_params[1], self.axis_params[2], self.axis_params[3]]
+        if self.man_ax_1_switch:
+            if e.event_type == 'down' and e.name == '3':
+                self.axis_params = [255, self.axis_params[1], self.axis_params[2], self.axis_params[3]]
+            if e.event_type == 'up' and e.name == '3':
+                self.axis_params = [127, self.axis_params[1], self.axis_params[2], self.axis_params[3]]
+            if e.event_type == 'down' and e.name == '1':
+                self.axis_params = [0, self.axis_params[1], self.axis_params[2], self.axis_params[3]]
+            if e.event_type == 'up' and e.name == '1':
+                self.axis_params = [127, self.axis_params[1], self.axis_params[2], self.axis_params[3]]
+        else:
+            if e.event_type == 'down' and e.name == '3':
+                self.axis_params = [self.axis_params[0], 255, self.axis_params[2], self.axis_params[3]]
+            if e.event_type == 'up' and e.name == '3':
+                self.axis_params = [self.axis_params[0], 127, self.axis_params[2], self.axis_params[3]]
+            if e.event_type == 'down' and e.name == '1':
+                self.axis_params = [self.axis_params[0], 0, self.axis_params[2], self.axis_params[3]]
+            if e.event_type == 'up' and e.name == '1':
+                self.axis_params = [self.axis_params[0], 127, self.axis_params[2], self.axis_params[3]]
 
-        if e.event_type == 'down' and e.name == '6':
-            self.axis_params = [self.axis_params[0], 255, self.axis_params[2], self.axis_params[3]]
-        if e.event_type == 'up' and e.name == '6':
-            self.axis_params = [self.axis_params[0], 127, self.axis_params[2], self.axis_params[3]]
-        if e.event_type == 'down' and e.name == '4':
-            self.axis_params = [self.axis_params[0], 0, self.axis_params[2], self.axis_params[3]]
-        if e.event_type == 'up' and e.name == '4':
-            self.axis_params = [self.axis_params[0], 127, self.axis_params[2], self.axis_params[3]]
-
-        if e.event_type == 'down' and e.name == '3':
-            self.axis_params = [self.axis_params[0], self.axis_params[1], 255, 255]
-        if e.event_type == 'up' and e.name == '3':
-            self.axis_params = [self.axis_params[0], self.axis_params[1], 127, 255]
-        if e.event_type == 'down' and e.name == '1':
-            self.axis_params = [self.axis_params[0], self.axis_params[1], 0, 255]
-        if e.event_type == 'up' and e.name == '1':
-            self.axis_params = [self.axis_params[0], self.axis_params[1], 127, 255]
+        if self.man_ax_2_switch:
+            if e.event_type == 'down' and e.name == '4':
+                self.axis_params = [self.axis_params[0], self.axis_params[1], 255, self.axis_params[3]]
+            if e.event_type == 'up' and e.name == '4':
+                self.axis_params = [self.axis_params[0], self.axis_params[1], 127, self.axis_params[3]]
+            if e.event_type == 'down' and e.name == '6':
+                self.axis_params = [self.axis_params[0], self.axis_params[1], 0, self.axis_params[3]]
+            if e.event_type == 'up' and e.name == '6':
+                self.axis_params = [self.axis_params[0], self.axis_params[1], 127, self.axis_params[3]]
+        else:
+            if e.event_type == 'down' and e.name == '4':
+                self.axis_params = [self.axis_params[0], self.axis_params[1], self.axis_params[2], 255]
+            if e.event_type == 'up' and e.name == '4':
+                self.axis_params = [self.axis_params[0], self.axis_params[1], self.axis_params[2], 127]
+            if e.event_type == 'down' and e.name == '6':
+                self.axis_params = [self.axis_params[0], self.axis_params[1], self.axis_params[2], 0]
+            if e.event_type == 'up' and e.name == '6':
+                self.axis_params = [self.axis_params[0], self.axis_params[1], self.axis_params[2], 127]
 
     def m_forward(self):
         return 127 + self.max_speed
