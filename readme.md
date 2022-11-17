@@ -15,7 +15,7 @@ sudo apt-get install libgstreamer1.0-dev \
      gstreamer1.0-gl \
      gstreamer1.0-gtk3
 pip3 install --upgrade --user pip
-pip3 install rich pythonping netifaces pyzbar
+pip3 install --upgrade rich pythonping netifaces pyzbar opencv-python numpy
 git clone https://github.com/Hexerpowers/rigui_legacy
 cd rigui_legacy
 sudo python3 install.py

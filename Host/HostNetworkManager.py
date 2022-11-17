@@ -120,6 +120,7 @@ class NetworkCommandClient:
                     data = self.mx_socket.recv(5)
                     self.telemetry = list(data)
                 if self.command == 2:
+                    time.sleep(1)
                     self.mx_socket.sendall(bytes([2]))
                     data = self.mx_socket.recv(3)
                     data = list(data)

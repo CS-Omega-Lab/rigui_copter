@@ -1,4 +1,5 @@
 from threading import Thread
+import os
 
 import cv2
 from flask import Flask, Response
@@ -10,13 +11,21 @@ from Robot.Drivers.VideoReader import VideoReader
 class QReader:
     def __init__(self, rdm):
         self.lgm = rdm.lgm
+        self.rdm = rdm
         self.host = rdm.local_address
         self.thread = Thread(target=self.stream, daemon=True, args=())
-        self.reader = VideoReader(rdm.config['devices']['video_dev'])
+        self.reader = VideoReader(rdm.config['devices']['video_dev'], self.lgm)
         self.counter = 0
         self.decoded = None
         self.found = False
         self.app = None
+        if not os.path.exists(rdm.devices['video_dev']):
+            self.lgm.dlg('ROBOT', 1, 'Устройство v4l2 на ' + rdm.devices['video_dev'] + ' не подключено.')
+            self.rdm.update_init_data(0, 2)
+            self.allowed = False
+        else:
+            self.lgm.dlg('ROBOT', 0, 'Устройство v4l2 на ' + rdm.devices['video_dev'] + ' подключено.')
+            self.rdm.update_init_data(0, 1)
 
     # def __init__(self):
     #     self.lgm = None

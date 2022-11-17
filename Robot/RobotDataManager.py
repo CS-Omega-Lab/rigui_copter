@@ -56,7 +56,7 @@ class DataManager:
             self.camera_x = SERVO(self.devices['camera_x'], True, self.lgm)
             self.camera_y = SERVO(self.devices['camera_y'], True, self.lgm)
 
-            self.qr_reader = QReader(self)
+            self.qr_reader = None
 
             self.thread = Thread(target=self.operate, daemon=True, args=())
 
@@ -106,7 +106,7 @@ class DataManager:
         if self.mode:
             self.video_streamer = VideoStreamer(self).start()
         else:
-            self.qr_reader = self.qr_reader.start()
+            self.qr_reader = QReader(self).start()
         self.telemetry_manager.start(self.remote_address)
 
     def operate(self):
