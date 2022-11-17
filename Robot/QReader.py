@@ -32,6 +32,7 @@ class QReader:
 
     def start(self):
         self.thread.start()
+        return self
 
     def decode(self, in_image):
         image = in_image

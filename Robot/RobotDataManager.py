@@ -16,8 +16,9 @@ from Robot.Drivers.DCMotor import DCMOTOR
 
 
 class DataManager:
-    def __init__(self, config, lgm):
+    def __init__(self, config, lgm, mode=True):
         self.config = config
+        self.mode = mode
         self.telemetry = []
         self.init_data = [
             0,
@@ -102,7 +103,10 @@ class DataManager:
         time.sleep(2)
         while not self.remote_address:
             time.sleep(1)
-        self.video_streamer = VideoStreamer(self).start()
+        if self.mode:
+            self.video_streamer = VideoStreamer(self).start()
+        else:
+            self.qr_reader = self.qr_reader.start()
         self.telemetry_manager.start(self.remote_address)
 
     def operate(self):
