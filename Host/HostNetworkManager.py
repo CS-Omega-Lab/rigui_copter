@@ -1,6 +1,9 @@
 import socket
 import time
+import json
 from threading import Thread
+
+from Common.ConstStorage import ConstStorage as CS
 
 
 class NetworkDataClient:
@@ -11,10 +14,12 @@ class NetworkDataClient:
         self.remote_address = hdm.remote_address
         self.data_port = int(self.config['network']['data_port'])
         self.data = [
-            127,  # Канал X
-            127,  # Канал Y
-            127,  # Канал Z
-            127  # Канал YAW
+            CS.MID_VAL,  # Канал X
+            CS.MID_VAL,  # Канал Y
+            CS.MID_VAL,  # Канал Z
+            CS.MID_VAL,  # Канал YAW
+            CS.MID_VAL,  # Блок моторов
+            CS.MIN_VAL  # Режим
         ]
         self.tx_thread = Thread(target=self.tx_void, daemon=True, args=())
         self.tx_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -42,8 +47,8 @@ class NetworkDataClient:
     def tx_void(self):
         try:
             while True:
-                self.tx_socket.sendall(bytes(self.data))
-                time.sleep(0.01)
+                self.tx_socket.sendall(json.dumps(self.data).encode('utf-8'))
+                time.sleep(0.001)
         except Exception as e:
             self.hdm.lg('HOST', 1, '[TX] Ошибка подключения или передачи: ' + str(e))
         time.sleep(1)

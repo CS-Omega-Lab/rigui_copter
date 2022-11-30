@@ -6,18 +6,7 @@
 ## На роботе, RPI: 
 
 ```shell
-sudo apt-get install libx264-dev libjpeg-dev libopencv-dev libatlas-base-dev
-sudo apt-get install libgstreamer1.0-dev \
-     libgstreamer-plugins-base1.0-dev \
-     libgstreamer-plugins-bad1.0-dev \
-     gstreamer1.0-plugins-ugly \
-     gstreamer1.0-tools \
-     gstreamer1.0-gl \
-     gstreamer1.0-gtk3
-pip3 install --upgrade --user pip
-pip3 install --upgrade rich pythonping netifaces pyzbar opencv-python numpy flask
-git clone https://github.com/Hexerpowers/rigui_legacy
-cd rigui_legacy
+sudo Scripts/robot_install.sh
 ```
 
 ## На компьютере, Windows: 
@@ -35,7 +24,7 @@ pip3 install rich pythonping netifaces inputs keyboard py_win_keyboard_layout fl
 
 ## Для запуска системы управления на компьютере используем
 ```shell
-START.bat
+host_start.bat
 ```
 Перетягиваем окно на левую сторону экрана и нажимаем Enter
 

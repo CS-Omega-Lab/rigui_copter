@@ -1,6 +1,9 @@
 import socket
 import time
+import json
 from threading import Thread
+
+from Common.ConstStorage import ConstStorage as CS
 
 
 class NetworkDataClient:
@@ -9,7 +12,14 @@ class NetworkDataClient:
         self.rdm = rdm
         self.lgm = lgm
         self.local_address = rdm.local_address
-        self.last_cmd = [127, 127, 127, 127]
+        self.last_cmd = [
+            CS.MID_VAL,  # Канал X
+            CS.MID_VAL,  # Канал Y
+            CS.MID_VAL,  # Канал Z
+            CS.MID_VAL,  # Канал YAW
+            CS.MID_VAL,  # Блок моторов
+            CS.MIN_VAL  # Режим
+        ]
         self.rx_thread = Thread(target=self.rx_void, daemon=True, args=())
         self.rx_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.ready = True
@@ -38,9 +48,9 @@ class NetworkDataClient:
                 self.rdm.set_remote_address(str(client_address[0]))
                 self.rdm.lazy_process_start()
                 while True:
-                    data = connection.recv(4)
-                    self.last_cmd = list(data)
-                    time.sleep(0.008)
+                    data = connection.recv(127)
+                    self.last_cmd = list(json.loads(data.decode('utf-8')))
+                    time.sleep(0.001)
             except Exception as e:
                 self.lgm.dlg('HOST', 1, '[RX] Ошибка подключения или передачи: ' + str(e))
                 self.rdm.drop_remote_address()

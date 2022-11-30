@@ -11,6 +11,7 @@ from rich.text import Text
 from rich.live import Live
 from Host.HostDataManager import DataManager
 from Common.LogManager import LogManager
+from Common.ConstStorage import ConstStorage as CS
 
 
 def make_layout(n) -> Layout:
@@ -34,7 +35,7 @@ class Header:
         grid.add_column(justify="center", ratio=1)
         grid.add_column(justify="right")
         grid.add_row(
-            "[b] EXPLORA Robot Control V4.2.0"
+            "[b] [Powered by EXPLORA] RiGUI Robot Control V5.1.0"
         )
         return Panel(grid,
                      border_style="bright_blue",
@@ -49,83 +50,19 @@ class State:
         content = Text()
 
         content.append("Режим: ", style="bold green")
-        content.append("РУЧНОЙ\r\n", style="bold blue u")
-        content.append("Камера: ", style="bold green")
-        if self.vals[3][0] > 127:
-            content.append("H↑ ", style="bold blue")
-        elif self.vals[3][0] < 127:
-            content.append("H↓ ", style="bold blue")
+        if self.vals[5] == CS.MIN_VAL:
+            content.append("РУЧНОЙ\r\n", style="bold blue u")
+        elif self.vals[5] == CS.MID_VAL:
+            content.append("GPS (3D FIX)\r\n", style="bold blue u")
         else:
-            content.append("H· ", style="bold white")
-        if self.vals[3][1] > 127:
-            content.append("V↑\r\n", style="bold blue")
-        elif self.vals[3][1] < 127:
-            content.append("V↓\r\n", style="bold blue")
-        else:
-            content.append("V·\r\n", style="bold white")
+            content.append("АВТО\r\n", style="bold blue u")
 
-        content.append("                 AX1: ", style="bold green")
-        if self.vals[2][0] > 127:
-            content.append("↑\r\n", style="bold blue")
-        elif self.vals[2][0] < 127:
-            content.append("↓\r\n", style="bold blue")
-        else:
-            content.append("·\r\n", style="bold white")
+        content.append("Моторы: ", style="bold green")
 
-        content.append("Привод:   ", style="bold green")
-        if self.vals[0][0] > 127:
-            content.append("↑ ", style="bold blue")
-        elif self.vals[0][0] < 127:
-            content.append("↓ ", style="bold blue")
+        if self.vals[4] == CS.MIN_VAL:
+            content.append("DISARMED\r\n", style="bold gray u")
         else:
-            content.append("· ", style="bold white")
-
-        if self.vals[0][1] > 127:
-            content.append("↑", style="bold blue")
-        elif self.vals[0][1] < 127:
-            content.append("↓", style="bold blue")
-        else:
-            content.append("·", style="bold white")
-
-        content.append("    AX2: ", style="bold green")
-        if self.vals[2][1] > 127:
-            content.append("↑\r\n", style="bold blue")
-        elif self.vals[2][1] < 127:
-            content.append("↓\r\n", style="bold blue")
-        else:
-            content.append("·\r\n", style="bold white")
-
-        content.append("Плавники: ", style="bold green")
-
-        if self.vals[1][0] > 127:
-            content.append("↑ ", style="bold blue")
-        elif self.vals[1][0] < 127:
-            content.append("↓ ", style="bold blue")
-        else:
-            content.append("· ", style="bold white")
-
-        if self.vals[1][1] > 127:
-            content.append("↑", style="bold blue")
-        elif self.vals[1][1] < 127:
-            content.append("↓", style="bold blue")
-        else:
-            content.append("·", style="bold white")
-
-        content.append("    AX3: ", style="bold green")
-        if self.vals[2][2] > 127:
-            content.append("↑\r\n", style="bold blue")
-        elif self.vals[2][2] < 127:
-            content.append("↓\r\n", style="bold blue")
-        else:
-            content.append("·\r\n", style="bold white")
-
-        content.append("                 AX4: ", style="bold green")
-        if self.vals[2][3] > 127:
-            content.append("↑\r\n", style="bold blue")
-        elif self.vals[2][3] < 127:
-            content.append("↓\r\n", style="bold blue")
-        else:
-            content.append("·\r\n", style="bold white")
+            content.append("ARMED\r\n", style="bold blue u")
 
         content_panel = Panel(
             Align.left(
