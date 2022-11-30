@@ -1,12 +1,12 @@
-# Rigui legacy
-> Кирилл, лезь в грёбанного робота!
+# Rigui Copter
+> Сергей, лезь в грёбанного робота!
 
 # Установка:
 
 ## На роботе, RPI: 
 
 ```shell
-sudo apt-get install libx264-dev libjpeg-dev
+sudo apt-get install libx264-dev libjpeg-dev libopencv-dev libatlas-base-dev
 sudo apt-get install libgstreamer1.0-dev \
      libgstreamer-plugins-base1.0-dev \
      libgstreamer-plugins-bad1.0-dev \
@@ -15,10 +15,9 @@ sudo apt-get install libgstreamer1.0-dev \
      gstreamer1.0-gl \
      gstreamer1.0-gtk3
 pip3 install --upgrade --user pip
-pip3 install --upgrade rich pythonping netifaces pyzbar opencv-python numpy
+pip3 install --upgrade rich pythonping netifaces pyzbar opencv-python numpy flask
 git clone https://github.com/Hexerpowers/rigui_legacy
 cd rigui_legacy
-sudo python3 install.py
 ```
 
 ## На компьютере, Windows: 
@@ -31,7 +30,7 @@ https://gstreamer.freedesktop.org/data/pkg/windows/1.20.4/msvc/gstreamer-1.0-dev
 Затем модули Python:
 ```shell
 pip3 install --upgrade --user pip
-pip3 install rich pythonping netifaces inputs keyboard py_win_keyboard_layout
+pip3 install rich pythonping netifaces inputs keyboard py_win_keyboard_layout flask opencv-python pyzbar
 ```
 
 ## Для запуска системы управления на компьютере используем

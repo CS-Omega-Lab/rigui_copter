@@ -42,7 +42,7 @@ class AddressManager:
         det_name = str(name)
         try:
             #addr = socket.gethostbyname(det_name)
-            addr = '192.168.1.98'
+            addr = '192.168.31.16'
             return addr
         except Exception as e:
             self.lgm.dlg('HOST', 1, 'Ошибка сетевого обнаружения, RPI не в сети (' + str(e) + ')')
