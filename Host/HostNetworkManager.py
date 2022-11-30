@@ -11,10 +11,10 @@ class NetworkDataClient:
         self.remote_address = hdm.remote_address
         self.data_port = int(self.config['network']['data_port'])
         self.data = [
-            (127, 127),  # Состояние двигателей гусениц
-            (127, 127),  # Состояние двигателей плавников
-            (127, 127, 127, 127),  # Состояние двигателей осей
-            (127, 127)  # Параметры двигателей подвеса камеры
+            127,  # Канал X
+            127,  # Канал Y
+            127,  # Канал Z
+            127  # Канал YAW
         ]
         self.tx_thread = Thread(target=self.tx_void, daemon=True, args=())
         self.tx_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -42,9 +42,7 @@ class NetworkDataClient:
     def tx_void(self):
         try:
             while True:
-                self.tx_socket.sendall(bytes((self.data[0][0], self.data[0][1], self.data[1][0], self.data[1][1],
-                                              self.data[2][0], self.data[2][1], self.data[2][2], self.data[2][3],
-                                              self.data[3][0], self.data[3][1])))
+                self.tx_socket.sendall(bytes(self.data))
                 time.sleep(0.01)
         except Exception as e:
             self.hdm.lg('HOST', 1, '[TX] Ошибка подключения или передачи: ' + str(e))
@@ -101,14 +99,6 @@ class NetworkCommandClient:
             self.hdm.lg('ROBOT', 1,
                         'Камера по адресу ' + self.config['devices'][
                             'video_dev'] + ' не подключена (code: ' + str(data[0]) + ').')
-        if data[1] == 1:
-            self.hdm.lg('ROBOT', 0,
-                        'Устройство UART-TTL на ' + self.config['devices'][
-                            'uart-ttl_dev'] + ' подключено.')
-        else:
-            self.hdm.lg('ROBOT', 1,
-                        'Устройство UART-TTL на ' + self.config['devices'][
-                            'uart-ttl_dev'] + ' не подключено (code: ' + str(data[1]) + ').')
 
         self.hdm.lg('ROBOT', 0, 'Робот готов.')
 

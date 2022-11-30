@@ -26,19 +26,24 @@ class GPManager(object):
         self.lp_y = 0
         self.lp_x = 0
 
-        self.MotorX = 127
-        self.MotorY = 127
+        self.CopterX = 127
+        self.CopterY = 127
+        self.CopterZ = 127
+        self.CopterYW = 127
 
-        self.ConsoleF = 127
-        self.ConsoleR = 127
-
-        self.CameraX = 127
-        self.CameraY = 127
-
-        self.ManipulatorX = 127
-        self.ManipulatorY = 127
-        self.ManipulatorZ = 127
-        self.ManipulatorV = 127
+        # self.MotorX = 127
+        # self.MotorY = 127
+        #
+        # self.ConsoleF = 127
+        # self.ConsoleR = 127
+        #
+        # self.CameraX = 127
+        # self.CameraY = 127
+        #
+        # self.ManipulatorX = 127
+        # self.ManipulatorY = 127
+        # self.ManipulatorZ = 127
+        # self.ManipulatorV = 127
 
         self._monitor_thread = threading.Thread(target=self._monitor_controller, args=())
         self._monitor_thread.daemon = True
@@ -56,28 +61,40 @@ class GPManager(object):
 
     def get_vals(self):
         return [
-            (self.MotorY, self.MotorX),
-            (self.ConsoleF, self.ConsoleR),
-            (self.ManipulatorX, self.ManipulatorY, self.ManipulatorZ, self.ManipulatorV),
-            (self.CameraX, self.CameraY)
+            self.CopterX,
+            self.CopterY,
+            self.CopterZ,
+            self.CopterYW
+            # (self.MotorY, self.MotorX),
+            # (self.ConsoleF, self.ConsoleR),
+            # (self.ManipulatorX, self.ManipulatorY, self.ManipulatorZ, self.ManipulatorV),
+            # (self.CameraX, self.CameraY)
         ]
 
     def _monitor_controller(self):
         while True:
 
-            self.CameraX = 127 + self.lj_x if abs(self.lj_x) > 20 else 127
-            self.CameraY = 127 + self.lj_y if abs(self.lj_y) > 20 else 127
+            self.CopterX = 127 + self.rj_x if abs(self.lj_x) > 20 else 127
+            self.CopterY = 127 + self.rj_y if abs(self.lj_x) > 20 else 127
+            self.CopterZ = 127 + self.lj_x if abs(self.lj_x) > 20 else 127
 
-            self.ManipulatorY = (254 if self.rj_x > 0 else 0) if abs(self.rj_x) > 90 else 127
-            self.ManipulatorX = (254 if self.rj_y > 0 else 0) if abs(self.rj_y) > 90 else 127
-            self.ManipulatorZ = 127 - self.X + self.B
-            self.ManipulatorV = 127 + self.lp_x
+            self.CopterYW = 127 + self.lj_y if abs(self.lj_y) > 20 else 127
 
-            self.MotorY = 127 + (- self.lt if self.lb else self.lt)
-            self.MotorX = 127 + (- self.rt if self.rb else self.rt)
-
-            self.ConsoleR = 127 + (self.lp_y if self.Y else - self.lp_y) if self.lp_y > 0 else 127
-            self.ConsoleF = 127 + (- self.lp_y if self.Y else self.lp_y) if self.lp_y < 0 else 127
+            # self.CameraX = 127 + self.lj_x if abs(self.lj_x) > 20 else 127
+            # self.CameraY = 127 + self.lj_y if abs(self.lj_y) > 20 else 127
+            #
+            # self.ManipulatorY = (254 if self.rj_x > 0 else 0) if abs(self.rj_x) > 90 else 127
+            # self.ManipulatorX = (254 if self.rj_y > 0 else 0) if abs(self.rj_y) > 90 else 127
+            #
+            #
+            # self.ManipulatorZ = 127 - self.X + self.B
+            # self.ManipulatorV = 127 + self.lp_x
+            #
+            # self.MotorY = 127 + (- self.lt if self.lb else self.lt)
+            # self.MotorX = 127 + (- self.rt if self.rb else self.rt)
+            #
+            # self.ConsoleR = 127 + (self.lp_y if self.Y else - self.lp_y) if self.lp_y > 0 else 127
+            # self.ConsoleF = 127 + (- self.lp_y if self.Y else self.lp_y) if self.lp_y < 0 else 127
 
             events = get_gamepad()
             for event in events:

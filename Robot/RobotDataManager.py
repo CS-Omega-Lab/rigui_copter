@@ -9,10 +9,7 @@ from Robot.QReader import QReader
 from Robot.RobotNetworkManager import NetworkDataClient
 from Robot.RobotNetworkManager import NetworkCommandClient
 from Robot.TelemetryManager import TelemetryManager
-from Robot.Drivers.BLDCMotor import BLDCMOTOR
-from Robot.Drivers.Ilyusha import ILYUSHA
 from Robot.Drivers.Servo import SERVO
-from Robot.Drivers.DCMotor import DCMOTOR
 
 
 class DataManager:
@@ -42,19 +39,24 @@ class DataManager:
         self.devices = config['devices']
 
         if not self.boot_lock:
-            self.left_motor = BLDCMOTOR(self.devices['left_motor'], self.config, self.lgm)
-            self.right_motor = BLDCMOTOR(self.devices['right_motor'], self.config, self.lgm)
+            self.copter_x = SERVO(self.devices['copter_x'], True, self.lgm)
+            self.copter_y = SERVO(self.devices['copter_y'], True, self.lgm)
+            self.copter_z = SERVO(self.devices['copter_z'], True, self.lgm)
+            self.copter_yw = SERVO(self.devices['copter_yw'], True, self.lgm)
 
-            self.front_motor = DCMOTOR(self.devices['front_motor_0'], self.devices['front_motor_1'], self.lgm)
-            self.rear_motor = DCMOTOR(self.devices['rear_motor_0'], self.devices['rear_motor_1'], self.lgm)
-
-            self.first_axis = ILYUSHA(self, self.devices['first_axis'], self.lgm)
-            self.second_axis = ILYUSHA(self, self.devices['second_axis'], self.lgm)
-            self.third_axis = SERVO(self.devices['third_axis'], False, self.lgm)
-            self.fourth_axis = DCMOTOR(self.devices['fourth_axis_0'], self.devices['fourth_axis_1'], self.lgm)
-
-            self.camera_x = SERVO(self.devices['camera_x'], True, self.lgm)
-            self.camera_y = SERVO(self.devices['camera_y'], True, self.lgm)
+            # self.left_motor = BLDCMOTOR(self.devices['left_motor'], self.config, self.lgm)
+            # self.right_motor = BLDCMOTOR(self.devices['right_motor'], self.config, self.lgm)
+            #
+            # self.front_motor = DCMOTOR(self.devices['front_motor_0'], self.devices['front_motor_1'], self.lgm)
+            # self.rear_motor = DCMOTOR(self.devices['rear_motor_0'], self.devices['rear_motor_1'], self.lgm)
+            #
+            # self.first_axis = ILYUSHA(self, self.devices['first_axis'], self.lgm)
+            # self.second_axis = ILYUSHA(self, self.devices['second_axis'], self.lgm)
+            # self.third_axis = SERVO(self.devices['third_axis'], False, self.lgm)
+            # self.fourth_axis = DCMOTOR(self.devices['fourth_axis_0'], self.devices['fourth_axis_1'], self.lgm)
+            #
+            # self.camera_x = SERVO(self.devices['camera_x'], True, self.lgm)
+            # self.camera_y = SERVO(self.devices['camera_y'], True, self.lgm)
 
             self.qr_reader = None
 
@@ -116,16 +118,11 @@ class DataManager:
             self.command_client.send_telemetry(self.telemetry_manager.get_telemetry())
             data = self.data_client.receive()
             self.motors_summary = abs(data[0] - 127) + abs(data[1] - 127) + abs(data[2] - 127) + abs(data[3] - 127)
-            self.left_motor.move(data[0])
-            self.right_motor.move(data[1])
-            self.front_motor.move(data[2])
-            self.rear_motor.move(data[3])
-            self.first_axis.move(data[4])
-            self.second_axis.move(data[5])
-            self.third_axis.move(data[6])
-            self.fourth_axis.move(data[7])
-            self.camera_x.move(data[8])
-            self.camera_y.move(data[9])
+            self.copter_x.move(data[0])
+            self.copter_y.move(data[1])
+            self.copter_z.move(data[2])
+            self.copter_yw.move(data[3])
+
             # if data[10] > 127:
             #     if not self.video_stream_state:
             #         self.video_streamer.stop()

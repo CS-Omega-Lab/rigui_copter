@@ -9,7 +9,7 @@ class NetworkDataClient:
         self.rdm = rdm
         self.lgm = lgm
         self.local_address = rdm.local_address
-        self.last_cmd = [127, 127, 127, 127, 127, 127, 127, 127, 127, 127]
+        self.last_cmd = [127, 127, 127, 127]
         self.rx_thread = Thread(target=self.rx_void, daemon=True, args=())
         self.rx_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.ready = True
@@ -38,7 +38,7 @@ class NetworkDataClient:
                 self.rdm.set_remote_address(str(client_address[0]))
                 self.rdm.lazy_process_start()
                 while True:
-                    data = connection.recv(10)
+                    data = connection.recv(4)
                     self.last_cmd = list(data)
                     time.sleep(0.008)
             except Exception as e:

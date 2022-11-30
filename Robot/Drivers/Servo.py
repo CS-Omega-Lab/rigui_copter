@@ -29,10 +29,10 @@ class SERVO:
         if self.mode:
             while True:
                 if self.speed == 127:
-                    self.pwm.ChangeDutyCycle(0)
+                    self.pwm.ChangeDutyCycle(7.5)
                 else:
                     self.position = 4 + self.speed / 34
-                time.sleep(0.1)
+                time.sleep(0.01)
         else:
             while True:
                 if self.speed > 127:
