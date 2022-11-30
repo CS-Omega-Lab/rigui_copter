@@ -6,7 +6,7 @@ import threading
 
 class GPManager(object):
     MAX_TRIG_VAL = 2.01
-    MAX_JOY_VAL = 256.01
+    MAX_JOY_VAL = 128.01
 
     def __init__(self, hdm):
 
@@ -26,10 +26,13 @@ class GPManager(object):
         self.lp_y = 0
         self.lp_x = 0
 
-        self.CopterX = 127
-        self.CopterY = 127
-        self.CopterZ = 127
-        self.CopterYW = 127
+        self.CopterX = 2047
+        self.CopterY = 2047
+        self.CopterZ = 2047
+        self.CopterYW = 2047
+
+        self.CopterArmed = 0
+        self.CopterMode = 0
 
         # self.MotorX = 127
         # self.MotorY = 127
@@ -44,6 +47,9 @@ class GPManager(object):
         # self.ManipulatorY = 127
         # self.ManipulatorZ = 127
         # self.ManipulatorV = 127
+
+        self.rb_last = 0
+        self.lb_last = 0
 
         self._monitor_thread = threading.Thread(target=self._monitor_controller, args=())
         self._monitor_thread.daemon = True
@@ -64,7 +70,9 @@ class GPManager(object):
             self.CopterX,
             self.CopterY,
             self.CopterZ,
-            self.CopterYW
+            self.CopterYW,
+            self.CopterArmed,
+            self.CopterMode
             # (self.MotorY, self.MotorX),
             # (self.ConsoleF, self.ConsoleR),
             # (self.ManipulatorX, self.ManipulatorY, self.ManipulatorZ, self.ManipulatorV),
@@ -74,11 +82,11 @@ class GPManager(object):
     def _monitor_controller(self):
         while True:
 
-            self.CopterX = 127 + self.rj_x if abs(self.lj_x) > 20 else 127
-            self.CopterY = 127 + self.rj_y if abs(self.lj_x) > 20 else 127
-            self.CopterZ = 127 + self.lj_x if abs(self.lj_x) > 20 else 127
+            self.CopterX = 2047 + self.rj_x if abs(self.lj_x) > 320 else 2047
+            self.CopterY = 2047 + self.rj_y if abs(self.lj_x) > 320 else 2047
+            self.CopterZ = 2047 + self.lj_x if abs(self.lj_x) > 320 else 2047
 
-            self.CopterYW = 127 + self.lj_y if abs(self.lj_y) > 20 else 127
+            self.CopterYW = 2047 + self.lj_y if abs(self.lj_y) > 320 else 2047
 
             # self.CameraX = 127 + self.lj_x if abs(self.lj_x) > 20 else 127
             # self.CameraY = 127 + self.lj_y if abs(self.lj_y) > 20 else 127
@@ -112,8 +120,14 @@ class GPManager(object):
                     self.rt = int(event.state / GPManager.MAX_TRIG_VAL)
                 elif event.code == 'BTN_TL':
                     self.lb = event.state
+                    if (not event.state) and self.lb_last:
+                        self.CopterArmed = 4095 if self.CopterArmed == 0 else 0
+                    self.lb_last = event.state
                 elif event.code == 'BTN_TR':
                     self.rb = event.state
+                    if (not event.state) and self.rb_last:
+                        self.CopterMode = 4095 if self.CopterMode == 0 else 0
+                    self.rb_last = event.state
                 elif event.code == 'BTN_SOUTH':
                     self.A = event.state
                 elif event.code == 'BTN_NORTH':
