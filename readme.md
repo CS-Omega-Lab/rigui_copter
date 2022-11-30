@@ -18,22 +18,11 @@ https://gstreamer.freedesktop.org/data/pkg/windows/1.20.4/msvc/gstreamer-1.0-dev
 ```
 Затем модули Python:
 ```shell
-pip3 install --upgrade --user pip
-pip3 install rich pythonping netifaces inputs keyboard py_win_keyboard_layout flask opencv-python pyzbar
+./Scripts/host_install.bat
 ```
 
 ## Для запуска системы управления на компьютере используем
 ```shell
-host_start.bat
+./Scripts/host_start.bat
 ```
-Перетягиваем окно на левую сторону экрана и нажимаем Enter
-
-## Для проверки состояния процесса на роботе
-```shell
-$/ rigui-check
-```
-
-## Для принудительной перезагрузки
-```shell
-$/ rigui-restart
-```
+Перетягиваем окно на левую сторону экрана и нажимаем Enter.
