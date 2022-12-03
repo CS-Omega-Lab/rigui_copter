@@ -9,7 +9,7 @@ class VideoReader:
         self.stream = None
         self.source = source
         self.grabbed = False
-        self.frame = cv2.imread('assets/test_qr.jpg')
+        self.frame = cv2.imread('Assets/test_qr.jpg')
         self.stream = None
 
     def start(self):

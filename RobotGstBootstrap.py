@@ -10,7 +10,7 @@ from Common.AddressManager import AddressManager
 
 lgm = LogManager()
 config = configparser.ConfigParser()
-config.read("assets/explora.cfg")
+config.read("Assets/explora.cfg")
 
 lgm.dlg("ROBOT", 3, "Запускаюсь...")
 

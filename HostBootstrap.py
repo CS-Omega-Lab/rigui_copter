@@ -130,7 +130,7 @@ class Logs:
 lgm = LogManager()
 lgm.dlg('HOST', 3, 'Запускаюсь...')
 config = configparser.ConfigParser()
-config.read("assets/explora.cfg")
+config.read("Assets/explora.cfg")
 rows = os.get_terminal_size()[1]
 data_manager = DataManager(config, lgm, rows).start()
 while data_manager.in_waiting():
