@@ -6,7 +6,7 @@ from Robot.QReader import QReader
 from Robot.RobotNetworkManager import NetworkDataClient
 from Robot.RobotNetworkManager import NetworkCommandClient
 from Robot.TelemetryManager import TelemetryManager
-from Robot.Drivers.Sbus import Sbus
+from Robot.Drivers.PPM_driver import PPM
 from Common.AddressManager import AddressManager
 from Common.ConstStorage import ConstStorage as CS
 
@@ -35,7 +35,7 @@ class DataManager:
         self.telemetry_manager = TelemetryManager(self, self.lgm)
 
         if not self.boot_lock:
-            self.copter_bus = Sbus()
+            self.copter_bus = PPM(16).start()
             self.thread = Thread(target=self.operate, daemon=True, args=())
             self.qr_reader = None
             self.video_streamer = None
@@ -95,4 +95,13 @@ class DataManager:
             data = self.data_client.receive()
             self.motors_summary = int((abs(data[0] - CS.MID_VAL) + abs(data[1] - CS.MID_VAL) + abs(
                 data[2] - CS.MID_VAL) + abs(data[3] - CS.MID_VAL))/16)
-            self.copter_bus.send(data)
+            self.copter_bus.send([
+                data[0],
+                data[1],
+                data[2],
+                data[3],
+                data[4],
+                data[5],
+                2047,
+                2047,
+            ])
