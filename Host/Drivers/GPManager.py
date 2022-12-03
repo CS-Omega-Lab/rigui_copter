@@ -6,7 +6,7 @@ from Common.ConstStorage import ConstStorage as CS
 
 class GPManager(object):
     MAX_TRIG_VAL = 2.01
-    MAX_JOY_VAL = 128.01
+    MAX_JOY_VAL = 16.01
 
     def __init__(self, hdm):
 
@@ -63,8 +63,9 @@ class GPManager(object):
 
     def _monitor_controller(self):
         while True:
-            self.CopterX = CS.MID_VAL + self.rj_x if abs(self.lj_x) > 320 else CS.MID_VAL
-            self.CopterY = CS.MID_VAL + self.rj_y if abs(self.lj_x) > 320 else CS.MID_VAL
+            self.CopterX = CS.MID_VAL + self.rj_x if abs(self.rj_x) > 320 else CS.MID_VAL
+
+            self.CopterY = CS.MID_VAL + self.rj_y if abs(self.rj_y) > 320 else CS.MID_VAL
             self.CopterZ = CS.MID_VAL + self.lj_x if abs(self.lj_x) > 320 else CS.MID_VAL
 
             self.CopterYW = CS.MID_VAL + self.lj_y if abs(self.lj_y) > 320 else CS.MID_VAL

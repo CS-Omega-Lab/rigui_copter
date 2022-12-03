@@ -77,7 +77,7 @@ class DataManager:
         am = AddressManager(self.lgm)
         subnet = str(self.config['network']['subnet'])
         local_address = am.get_local_address_by_subnet(subnet)
-        remote_address = am.get_remote_address_by_name("rpi.local")
+        remote_address = am.get_remote_address_by_name("rpi")
 
         if local_address:
             self.local_address = local_address

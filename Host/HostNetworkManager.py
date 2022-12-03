@@ -48,7 +48,7 @@ class NetworkDataClient:
         try:
             while True:
                 self.tx_socket.sendall(json.dumps(self.data).encode('utf-8'))
-                time.sleep(0.001)
+                time.sleep(0.01)
         except Exception as e:
             self.hdm.lg('HOST', 1, '[TX] Ошибка подключения или передачи: ' + str(e))
         time.sleep(1)
