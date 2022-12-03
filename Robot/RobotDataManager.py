@@ -96,12 +96,12 @@ class DataManager:
             self.motors_summary = int((abs(data[0] - CS.MID_VAL) + abs(data[1] - CS.MID_VAL) + abs(
                 data[2] - CS.MID_VAL) + abs(data[3] - CS.MID_VAL))/16)
             self.copter_bus.send([
-                data[0],
-                data[1],
-                data[2],
-                data[3],
-                data[4],
-                data[5],
-                2047,
-                2047,
+                int(data[0]/16),
+                int(data[1]/16),
+                int(data[2]/16),
+                int(data[3]/16),
+                int(data[4]/16),
+                int(data[5]/16),
+                127,
+                127,
             ])

@@ -63,12 +63,11 @@ class GPManager(object):
 
     def _monitor_controller(self):
         while True:
+            cop_z = ((CS.MID_VAL + self.lj_y if abs(self.lj_y) > 320 else CS.MID_VAL)-CS.MID_VAL)*2
+            self.CopterZ = cop_z if cop_z > 0 else 0
+            self.CopterYW = CS.MID_VAL + self.lj_x if abs(self.lj_x) > 320 else CS.MID_VAL
             self.CopterX = CS.MID_VAL + self.rj_x if abs(self.rj_x) > 320 else CS.MID_VAL
-
             self.CopterY = CS.MID_VAL + self.rj_y if abs(self.rj_y) > 320 else CS.MID_VAL
-            self.CopterZ = CS.MID_VAL + self.lj_x if abs(self.lj_x) > 320 else CS.MID_VAL
-
-            self.CopterYW = CS.MID_VAL + self.lj_y if abs(self.lj_y) > 320 else CS.MID_VAL
 
             events = get_gamepad()
             for event in events:

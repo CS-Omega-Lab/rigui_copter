@@ -20,10 +20,10 @@ class PPM:
         gpio.output(self.pin, gpio.LOW)
         self.pulse_width = 300
         self.next_channels = [1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]
-        self.thread = Thread(target=self.roll(), daemon=True, args=())
+        self.thread = Thread(target=self.roll, daemon=True, args=())
 
     def start(self):
-        self.thread.start()
+        #self.thread.start()
         return self
 
     def __pulse__(self):
@@ -32,12 +32,13 @@ class PPM:
         gpio.output(self.pin, gpio.LOW)
 
     def roll(self):
-        for i in self.channels:
+        while True:
+            for i in self.channels:
+                self.__pulse__()
+                time.sleep(i / 1000000)
             self.__pulse__()
-            time.sleep(i / 1000000)
-        self.__pulse__()
-        time.sleep((22500 - 9 * self.pulse_width - sum(self.channels)) / 1000000)
-        self.channels = self.next_channels
+            time.sleep((22500 - 9 * self.pulse_width - sum(self.channels)) / 1000000)
+            self.channels = self.next_channels
 
     def send(self, new_channels):
         new = new_channels
