@@ -1,6 +1,9 @@
 import socket
 import time
+import json
 from threading import Thread
+
+from Common.ConstStorage import ConstStorage as CS
 
 
 class NetworkDataClient:
@@ -9,14 +12,23 @@ class NetworkDataClient:
         self.rdm = rdm
         self.lgm = lgm
         self.local_address = rdm.local_address
-        self.last_cmd = [127, 127, 127, 127]
+        self.rx_buf = b''
+        self.last_cmd = [
+            CS.MID_VAL,  # Канал X
+            CS.MID_VAL,  # Канал Y
+            CS.MID_VAL,  # Канал Z
+            CS.MID_VAL,  # Канал YAW
+            CS.MID_VAL,  # Блок моторов
+            CS.MIN_VAL  # Режим
+        ]
         self.rx_thread = Thread(target=self.rx_void, daemon=True, args=())
+        self.decode_thread = Thread(target=self.decode_void, daemon=True, args=())
         self.rx_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.ready = True
-        self.lgm.dlg('ROBOT', 3, '[RX] Открываю сокет: '+str((self.local_address, int(self.config['data_port']))))
+        self.lgm.dlg('ROBOT', 3, '[RX] Открываю сокет: ' + str((self.local_address, int(self.config['data_port']))))
         try:
             self.rx_socket.bind((self.local_address, int(self.config['data_port'])))
-            self.lgm.dlg('ROBOT', 3, '[RX] Сокет открыт: '+str((self.local_address, int(self.config['data_port']))))
+            self.lgm.dlg('ROBOT', 3, '[RX] Сокет открыт: ' + str((self.local_address, int(self.config['data_port']))))
         except Exception as e:
             self.lgm.dlg('ROBOT', 1, '[RX] Ошибка привязки сокета: ' + str(e))
             self.ready = False
@@ -24,9 +36,21 @@ class NetworkDataClient:
     def start(self):
         if self.ready:
             self.rx_thread.start()
+            self.decode_thread.start()
 
     def receive(self):
         return self.last_cmd
+
+    def decode_void(self):
+        while True:
+            cp = self.rx_buf
+            time.sleep(0.001)
+            m_v1 = cp.find(b'\x5b')
+            m_v2 = cp.find(b'\x5d')
+            if b'\x5b' in cp and b'\x5d' in cp:
+                msg = cp[m_v1:m_v2 + 1]
+                self.last_cmd = list(json.loads(msg.decode('utf-8')))
+                self.rx_buf = self.rx_buf[m_v2 + 1:len(self.rx_buf)]
 
     def rx_void(self):
         self.rx_socket.listen(1)
@@ -38,9 +62,9 @@ class NetworkDataClient:
                 self.rdm.set_remote_address(str(client_address[0]))
                 self.rdm.lazy_process_start()
                 while True:
-                    data = connection.recv(4)
-                    self.last_cmd = list(data)
-                    time.sleep(0.008)
+                    data = connection.recv(64)
+                    self.rx_buf += data
+                    time.sleep(0.01)
             except Exception as e:
                 self.lgm.dlg('HOST', 1, '[RX] Ошибка подключения или передачи: ' + str(e))
                 self.rdm.drop_remote_address()
@@ -57,10 +81,11 @@ class NetworkCommandClient:
         self.mx_thread = Thread(target=self.mx_void, daemon=True, args=())
         self.mx_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.ready = True
-        self.lgm.dlg('ROBOT', 3, '[MX] Открываю сокет: '+str((self.local_address, int(self.config['command_port']))))
+        self.lgm.dlg('ROBOT', 3, '[MX] Открываю сокет: ' + str((self.local_address, int(self.config['command_port']))))
         try:
             self.mx_socket.bind((self.local_address, int(self.config['command_port'])))
-            self.lgm.dlg('ROBOT', 3, '[MX] Сокет открыт: '+str((self.local_address, int(self.config['command_port']))))
+            self.lgm.dlg('ROBOT', 3,
+                         '[MX] Сокет открыт: ' + str((self.local_address, int(self.config['command_port']))))
         except Exception as e:
             self.lgm.dlg('ROBOT', 1, '[MX] Ошибка привязки сокета: ' + str(e))
             self.ready = False

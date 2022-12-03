@@ -1,15 +1,14 @@
 import time
-# noinspection PyUnresolvedReferences
-# from RPi import GPIO
 from threading import Thread
 
-from Common.AddressManager import AddressManager
 from Robot.Drivers.VideoStreamer import VideoStreamer
 from Robot.QReader import QReader
 from Robot.RobotNetworkManager import NetworkDataClient
 from Robot.RobotNetworkManager import NetworkCommandClient
 from Robot.TelemetryManager import TelemetryManager
-from Robot.Drivers.Servo import SERVO
+from Robot.Drivers.Sbus import Sbus
+from Common.AddressManager import AddressManager
+from Common.ConstStorage import ConstStorage as CS
 
 
 class DataManager:
@@ -26,42 +25,19 @@ class DataManager:
         self.local_address = None
         self.remote_address = None
         self.boot_lock = False
-
         self.video_stream_state = False
+        self.devices = config['devices']
 
         self.get_addresses()
 
         self.data_client = NetworkDataClient(self, self.lgm)
         self.command_client = NetworkCommandClient(self, self.lgm)
-
         self.telemetry_manager = TelemetryManager(self, self.lgm)
 
-        self.devices = config['devices']
-
         if not self.boot_lock:
-            self.copter_x = SERVO(self.devices['copter_x'], True, self.lgm)
-            self.copter_y = SERVO(self.devices['copter_y'], True, self.lgm)
-            self.copter_z = SERVO(self.devices['copter_z'], True, self.lgm)
-            self.copter_yw = SERVO(self.devices['copter_yw'], True, self.lgm)
-
-            # self.left_motor = BLDCMOTOR(self.devices['left_motor'], self.config, self.lgm)
-            # self.right_motor = BLDCMOTOR(self.devices['right_motor'], self.config, self.lgm)
-            #
-            # self.front_motor = DCMOTOR(self.devices['front_motor_0'], self.devices['front_motor_1'], self.lgm)
-            # self.rear_motor = DCMOTOR(self.devices['rear_motor_0'], self.devices['rear_motor_1'], self.lgm)
-            #
-            # self.first_axis = ILYUSHA(self, self.devices['first_axis'], self.lgm)
-            # self.second_axis = ILYUSHA(self, self.devices['second_axis'], self.lgm)
-            # self.third_axis = SERVO(self.devices['third_axis'], False, self.lgm)
-            # self.fourth_axis = DCMOTOR(self.devices['fourth_axis_0'], self.devices['fourth_axis_1'], self.lgm)
-            #
-            # self.camera_x = SERVO(self.devices['camera_x'], True, self.lgm)
-            # self.camera_y = SERVO(self.devices['camera_y'], True, self.lgm)
-
-            self.qr_reader = None
-
+            self.copter_bus = Sbus()
             self.thread = Thread(target=self.operate, daemon=True, args=())
-
+            self.qr_reader = None
             self.video_streamer = None
         else:
             self.lgm.dlg('HOST', 1, 'Ошибка запуска DataManager: boot_lock. Запуск невозможен.')
@@ -114,23 +90,9 @@ class DataManager:
     def operate(self):
         time.sleep(2)
         while True:
-            time.sleep(0.01)
+            time.sleep(0.001)
             self.command_client.send_telemetry(self.telemetry_manager.get_telemetry())
             data = self.data_client.receive()
-            self.motors_summary = abs(data[0] - 127) + abs(data[1] - 127) + abs(data[2] - 127) + abs(data[3] - 127)
-            self.copter_x.move(data[0])
-            self.copter_y.move(data[1])
-            self.copter_z.move(data[2])
-            self.copter_yw.move(data[3])
-
-            # if data[10] > 127:
-            #     if not self.video_stream_state:
-            #         self.video_streamer.stop()
-            #         time.sleep(2)
-            #         self.qr_reader.start()
-            # else:
-            #     if self.video_stream_state:
-            #         self.qr_reader.stop()
-            #         time.sleep(2)
-            #         self.video_streamer.start()
-
+            self.motors_summary = int((abs(data[0] - CS.MID_VAL) + abs(data[1] - CS.MID_VAL) + abs(
+                data[2] - CS.MID_VAL) + abs(data[3] - CS.MID_VAL))/16)
+            self.copter_bus.send(data)

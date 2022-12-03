@@ -3,10 +3,10 @@ from threading import Thread
 
 from Host.HostNetworkManager import NetworkDataClient
 from Host.HostNetworkManager import NetworkCommandClient
-from Host.Drivers.KeyManager import KeyManager
 from Host.Drivers.GPManager import GPManager
 from Host.CameraReader import CameraReader
 from Common.AddressManager import AddressManager
+from Common.ConstStorage import ConstStorage as CS
 
 
 class DataManager:
@@ -24,10 +24,12 @@ class DataManager:
         self.remote_address = None
 
         self.vals = [
-            127,   # Канал X
-            127,   # Канал Y
-            127,   # Канал Z
-            127    # Канал YAW
+            CS.MID_VAL,   # Канал X
+            CS.MID_VAL,   # Канал Y
+            CS.MID_VAL,   # Канал Z
+            CS.MID_VAL,   # Канал YAW
+            CS.MID_VAL,   # Блок моторов
+            CS.MIN_VAL    # Режим
         ]
 
         self.telemetry = [
@@ -43,7 +45,8 @@ class DataManager:
         if config['general']['control'] == "gamepad":
             self.input_manager = GPManager(self).start()
         elif config['general']['control'] == "keyboard":
-            self.input_manager = KeyManager(self).start()
+            self.lgm.dlg('HOST', 1, 'Неподдерживаемый способ ввода: ' + str(config['general']['control']))
+            self.boot_lock = True
         else:
             self.lgm.dlg('HOST', 1, 'Неизвестный способ ввода: '+str(config['general']['control']))
             self.boot_lock = True
@@ -74,7 +77,7 @@ class DataManager:
         am = AddressManager(self.lgm)
         subnet = str(self.config['network']['subnet'])
         local_address = am.get_local_address_by_subnet(subnet)
-        remote_address = am.get_remote_address_by_name("rpi.local")
+        remote_address = am.get_remote_address_by_name("rpi")
 
         if local_address:
             self.local_address = local_address
@@ -100,7 +103,7 @@ class DataManager:
 
     def update(self):
         while True:
-            time.sleep(0.01)
+            time.sleep(0.001)
             self.telemetry = self.command_client.get_telemetry()
             self.vals = self.input_manager.get_vals()
             self.data_client.send_info(self.vals)

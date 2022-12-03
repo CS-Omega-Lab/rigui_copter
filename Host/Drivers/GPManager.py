@@ -1,12 +1,12 @@
-import time
-
 from inputs import get_gamepad
 import threading
+
+from Common.ConstStorage import ConstStorage as CS
 
 
 class GPManager(object):
     MAX_TRIG_VAL = 2.01
-    MAX_JOY_VAL = 256.01
+    MAX_JOY_VAL = 16.01
 
     def __init__(self, hdm):
 
@@ -26,24 +26,16 @@ class GPManager(object):
         self.lp_y = 0
         self.lp_x = 0
 
-        self.CopterX = 127
-        self.CopterY = 127
-        self.CopterZ = 127
-        self.CopterYW = 127
+        self.CopterX = CS.MID_VAL
+        self.CopterY = CS.MID_VAL
+        self.CopterZ = CS.MID_VAL
+        self.CopterYW = CS.MID_VAL
 
-        # self.MotorX = 127
-        # self.MotorY = 127
-        #
-        # self.ConsoleF = 127
-        # self.ConsoleR = 127
-        #
-        # self.CameraX = 127
-        # self.CameraY = 127
-        #
-        # self.ManipulatorX = 127
-        # self.ManipulatorY = 127
-        # self.ManipulatorZ = 127
-        # self.ManipulatorV = 127
+        self.CopterArmed = 0
+        self.CopterMode = 0
+
+        self.rb_last = 0
+        self.lb_last = 0
 
         self._monitor_thread = threading.Thread(target=self._monitor_controller, args=())
         self._monitor_thread.daemon = True
@@ -64,37 +56,19 @@ class GPManager(object):
             self.CopterX,
             self.CopterY,
             self.CopterZ,
-            self.CopterYW
-            # (self.MotorY, self.MotorX),
-            # (self.ConsoleF, self.ConsoleR),
-            # (self.ManipulatorX, self.ManipulatorY, self.ManipulatorZ, self.ManipulatorV),
-            # (self.CameraX, self.CameraY)
+            self.CopterYW,
+            self.CopterArmed,
+            self.CopterMode
         ]
 
     def _monitor_controller(self):
         while True:
+            self.CopterX = CS.MID_VAL + self.rj_x if abs(self.rj_x) > 320 else CS.MID_VAL
 
-            self.CopterX = 127 + self.rj_x if abs(self.lj_x) > 20 else 127
-            self.CopterY = 127 + self.rj_y if abs(self.lj_x) > 20 else 127
-            self.CopterZ = 127 + self.lj_x if abs(self.lj_x) > 20 else 127
+            self.CopterY = CS.MID_VAL + self.rj_y if abs(self.rj_y) > 320 else CS.MID_VAL
+            self.CopterZ = CS.MID_VAL + self.lj_x if abs(self.lj_x) > 320 else CS.MID_VAL
 
-            self.CopterYW = 127 + self.lj_y if abs(self.lj_y) > 20 else 127
-
-            # self.CameraX = 127 + self.lj_x if abs(self.lj_x) > 20 else 127
-            # self.CameraY = 127 + self.lj_y if abs(self.lj_y) > 20 else 127
-            #
-            # self.ManipulatorY = (254 if self.rj_x > 0 else 0) if abs(self.rj_x) > 90 else 127
-            # self.ManipulatorX = (254 if self.rj_y > 0 else 0) if abs(self.rj_y) > 90 else 127
-            #
-            #
-            # self.ManipulatorZ = 127 - self.X + self.B
-            # self.ManipulatorV = 127 + self.lp_x
-            #
-            # self.MotorY = 127 + (- self.lt if self.lb else self.lt)
-            # self.MotorX = 127 + (- self.rt if self.rb else self.rt)
-            #
-            # self.ConsoleR = 127 + (self.lp_y if self.Y else - self.lp_y) if self.lp_y > 0 else 127
-            # self.ConsoleF = 127 + (- self.lp_y if self.Y else self.lp_y) if self.lp_y < 0 else 127
+            self.CopterYW = CS.MID_VAL + self.lj_y if abs(self.lj_y) > 320 else CS.MID_VAL
 
             events = get_gamepad()
             for event in events:
@@ -112,8 +86,17 @@ class GPManager(object):
                     self.rt = int(event.state / GPManager.MAX_TRIG_VAL)
                 elif event.code == 'BTN_TL':
                     self.lb = event.state
+                    if (not event.state) and self.lb_last:
+                        self.CopterArmed = CS.MAX_VAL if self.CopterArmed == 0 else 0
+                    self.lb_last = event.state
                 elif event.code == 'BTN_TR':
                     self.rb = event.state
+                    if (not event.state) and self.rb_last:
+                        if self.CopterMode+CS.MID_VAL > CS.MAX_VAL:
+                            self.CopterMode = 0
+                        else:
+                            self.CopterMode += CS.MID_VAL
+                    self.rb_last = event.state
                 elif event.code == 'BTN_SOUTH':
                     self.A = event.state
                 elif event.code == 'BTN_NORTH':
