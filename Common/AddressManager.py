@@ -5,10 +5,16 @@ from netifaces import interfaces, ifaddresses, AF_INET
 
 
 class AddressManager:
-    def __init__(self, lgm):
+    def __init__(self, lgm, config):
         self.lgm = lgm
+        self.config = config
+        self.mode = True if config['network']['platform_addr_select']=='auto' else False
 
     def wait_for_network(self, subnet):
+        if self.mode:
+            self.lgm.dlg("ROBOT", 3, "Режим сети: автоопределение адреса платформы")
+        else:
+            self.lgm.dlg("ROBOT", 3, "Режим сети: статический адрес платформы")
         self.lgm.dlg("ROBOT", 3, "Жду подключение с подсетью "+str(subnet)+"...")
         key = str(subnet)
         local_addr = None
@@ -39,10 +45,16 @@ class AddressManager:
             return None
 
     def get_remote_address_by_name(self, name):
+        if self.mode:
+            self.lgm.dlg("ROBOT", 3, "Статический адрес платформы: "+self.config['network']['platform_static_addr'])
+        else:
+            self.lgm.dlg("ROBOT", 3, "Определяю адрес платформы, подсеть: "+self.config['network']['platform_static_addr'])
         det_name = str(name)
         try:
-            addr = socket.gethostbyname(det_name)
-            #addr = '192.168.31.104'
+            if self.mode:
+                addr = socket.gethostbyname(det_name)
+            else:
+                addr = self.config['network']['platform_static_addr']
             return addr
         except Exception as e:
             self.lgm.dlg('HOST', 1, 'Ошибка сетевого обнаружения, RPI не в сети (' + str(e) + ')')

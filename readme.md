@@ -6,7 +6,7 @@
 ## На роботе, RPI: 
 
 ```shell
-sudo Scripts/robot_install.sh
+sudo Scripts/platform_install.sh
 ```
 
 ## На компьютере, Windows: 
@@ -18,11 +18,11 @@ https://gstreamer.freedesktop.org/data/pkg/windows/1.20.4/msvc/gstreamer-1.0-dev
 ```
 Затем модули Python:
 ```shell
-./Scripts/host_install.bat
+./Scripts/controller_install.bat
 ```
 
 ## Для запуска системы управления на компьютере используем
 ```shell
-./Scripts/host_start.bat
+./Scripts/controller_start.bat
 ```
 Перетягиваем окно на левую сторону экрана и нажимаем Enter.

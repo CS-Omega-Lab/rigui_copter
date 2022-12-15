@@ -1,10 +1,10 @@
 import time
 from threading import Thread
 
-from Host.HostNetworkManager import NetworkDataClient
-from Host.HostNetworkManager import NetworkCommandClient
-from Host.Drivers.GPManager import GPManager
-from Host.CameraReader import CameraReader
+from Controller.NetworkManager import NetworkDataClient
+from Controller.NetworkManager import NetworkCommandClient
+from Controller.Drivers.GPManager import GPManager
+from Controller.CameraReader import CameraReader
 from Common.AddressManager import AddressManager
 from Common.ConstStorage import ConstStorage as CS
 
@@ -42,13 +42,13 @@ class DataManager:
 
         self.thread = Thread(target=self.update, daemon=True, args=())
 
-        if config['general']['control'] == "gamepad":
+        if config['general']['controller'] == "gamepad":
             self.input_manager = GPManager(self).start()
-        elif config['general']['control'] == "keyboard":
-            self.lgm.dlg('HOST', 1, 'Неподдерживаемый способ ввода: ' + str(config['general']['control']))
+        elif config['general']['controller'] == "keyboard":
+            self.lgm.dlg('CNTR', 1, 'Неподдерживаемый способ ввода: ' + str(config['general']['controller']))
             self.boot_lock = True
         else:
-            self.lgm.dlg('HOST', 1, 'Неизвестный способ ввода: '+str(config['general']['control']))
+            self.lgm.dlg('CNTR', 1, 'Неизвестный способ ввода: '+str(config['general']['controller']))
             self.boot_lock = True
 
         self.get_addresses()
@@ -74,8 +74,8 @@ class DataManager:
         return self.telemetry
 
     def get_addresses(self):
-        am = AddressManager(self.lgm)
-        subnet = str(self.config['network']['subnet'])
+        am = AddressManager(self.lgm, self.config)
+        subnet = str(self.config['network']['common_subnet'])
         local_address = am.get_local_address_by_subnet(subnet)
         remote_address = am.get_remote_address_by_name("rpi")
 
@@ -93,12 +93,12 @@ class DataManager:
         try:
             if not self.boot_lock:
                 self.thread.start()
-                self.lg('HOST', 0, 'Запуск DataManager: успешно.')
+                self.lg('CNTR', 0, 'Запуск DataManager: успешно.')
                 self.waiting = False
             else:
-                self.lgm.dlg('HOST', 1, 'Ошибка запуска DataManager: boot_lock. Запуск невозможен.')
+                self.lgm.dlg('CNTR', 1, 'Ошибка запуска DataManager: boot_lock. Запуск невозможен.')
         except Exception as e:
-            self.lg('HOST', 1, 'Ошибка запуска DataManager: ' + str(e))
+            self.lg('CNTR', 1, 'Ошибка запуска DataManager: ' + str(e))
         return self
 
     def update(self):

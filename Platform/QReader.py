@@ -5,7 +5,7 @@ import cv2
 from flask import Flask, Response
 from pyzbar import pyzbar
 
-from Robot.Drivers.VideoReader import VideoReader
+from Platform.Drivers.VideoReader import VideoReader
 
 
 class QReader:

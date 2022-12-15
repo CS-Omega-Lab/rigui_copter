@@ -1,12 +1,12 @@
 import time
 from threading import Thread
 
-from Robot.Drivers.VideoStreamer import VideoStreamer
-from Robot.QReader import QReader
-from Robot.RobotNetworkManager import NetworkDataClient
-from Robot.RobotNetworkManager import NetworkCommandClient
-from Robot.TelemetryManager import TelemetryManager
-from Robot.Drivers.PPM_driver import PPM
+from Platform.Drivers.VideoStreamer import VideoStreamer
+from Platform.QReader import QReader
+from Platform.RobotNetworkManager import NetworkDataClient
+from Platform.RobotNetworkManager import NetworkCommandClient
+from Platform.TelemetryManager import TelemetryManager
+from Platform.Drivers.PPM_driver import PPM
 from Common.AddressManager import AddressManager
 from Common.ConstStorage import ConstStorage as CS
 
@@ -35,7 +35,7 @@ class DataManager:
         self.telemetry_manager = TelemetryManager(self, self.lgm)
 
         if not self.boot_lock:
-            self.copter_bus = PPM(16).start()
+            self.copter_bus = PPM().start()
             self.thread = Thread(target=self.operate, daemon=True, args=())
             self.qr_reader = None
             self.video_streamer = None

@@ -4,7 +4,7 @@ import os
 import configparser
 from netifaces import interfaces, ifaddresses, AF_INET
 
-from Robot.RobotDataManager import DataManager
+from Platform.RobotDataManager import DataManager
 from Common.LogManager import LogManager
 from Common.AddressManager import AddressManager
 

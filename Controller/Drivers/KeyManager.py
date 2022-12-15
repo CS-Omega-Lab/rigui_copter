@@ -56,10 +56,10 @@ class KeyManager:
         try:
             self.thread.start()
         except Exception as e:
-            self.hdm.lgm.dlg('HOST', '1', 'Ошибка запуска KeyManager: '+str(e))
+            self.hdm.lgm.dlg('CNTR', '1', 'Ошибка запуска KeyManager: '+str(e))
             self.hdm.set_boot_lock()
-        self.hdm.lgm.dlg('HOST', 3, 'Запуск KeyManager: успешно.')
-        self.hdm.lg('HOST', 0, 'Запуск KeyManager: успешно.')
+        self.hdm.lgm.dlg('CNTR', 3, 'Запуск KeyManager: успешно.')
+        self.hdm.lg('CNTR', 0, 'Запуск KeyManager: успешно.')
         return self
 
     @staticmethod

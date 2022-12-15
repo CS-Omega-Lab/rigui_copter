@@ -4,7 +4,7 @@ import threading
 from Common.ConstStorage import ConstStorage as CS
 
 
-class GPManager(object):
+class GPManager:
     MAX_TRIG_VAL = 2.01
     MAX_JOY_VAL = 16.01
 
@@ -44,10 +44,10 @@ class GPManager(object):
         try:
             get_gamepad()
             self._monitor_thread.start()
-            self.hdm.lgm.dlg('HOST', 3, 'Запуск GPManager: успешно.')
-            self.hdm.lg('HOST', 0, 'Запуск GPManager: успешно.')
+            self.hdm.lgm.dlg('CNTR', 3, 'Запуск GPManager: успешно.')
+            self.hdm.lg('CNTR', 0, 'Запуск GPManager: успешно.')
         except Exception as e:
-            self.hdm.lgm.dlg('HOST', 1, 'Ошибка запуска GPManager: '+str(e))
+            self.hdm.lgm.dlg('CNTR', 1, 'Ошибка запуска GPManager: '+str(e))
             self.hdm.set_boot_lock()
         return self
 
@@ -63,11 +63,11 @@ class GPManager(object):
 
     def _monitor_controller(self):
         while True:
-            cop_z = ((CS.MID_VAL + self.lj_y if abs(self.lj_y) > 320 else CS.MID_VAL)-CS.MID_VAL)*2
+            cop_z = ((CS.MID_VAL + self.lj_y if abs(self.lj_y) > 70 else CS.MID_VAL)-CS.MID_VAL)*2
             self.CopterZ = cop_z if cop_z > 0 else 0
-            self.CopterYW = CS.MID_VAL + self.lj_x if abs(self.lj_x) > 320 else CS.MID_VAL
-            self.CopterX = CS.MID_VAL + self.rj_x if abs(self.rj_x) > 320 else CS.MID_VAL
-            self.CopterY = CS.MID_VAL + self.rj_y if abs(self.rj_y) > 320 else CS.MID_VAL
+            self.CopterYW = CS.MID_VAL + self.lj_x if abs(self.lj_x) > 150 else CS.MID_VAL
+            self.CopterX = CS.MID_VAL + self.rj_x if abs(self.rj_x) > 150 else CS.MID_VAL
+            self.CopterY = CS.MID_VAL + self.rj_y if abs(self.rj_y) > 150 else CS.MID_VAL
 
             events = get_gamepad()
             for event in events:

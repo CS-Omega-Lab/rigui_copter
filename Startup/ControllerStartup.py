@@ -1,5 +1,11 @@
-import time
+import sys
 import os
+
+current = os.path.dirname(os.path.realpath(__file__))
+parent = os.path.dirname(current)
+sys.path.append(parent)
+
+import time
 import configparser
 
 from rich import box
@@ -9,7 +15,7 @@ from rich.panel import Panel
 from rich.table import Table
 from rich.text import Text
 from rich.live import Live
-from Host.HostDataManager import DataManager
+from Controller.DataManager import DataManager
 from Common.LogManager import LogManager
 from Common.ConstStorage import ConstStorage as CS
 
@@ -35,7 +41,7 @@ class Header:
         grid.add_column(justify="center", ratio=1)
         grid.add_column(justify="right")
         grid.add_row(
-            "[b] [Powered by EXPLORA] RiGUI Robot Control V5.1.0"
+            "[b] [Powered by EXPLORA] RiGUI Platform Control V5.3.1"
         )
         return Panel(grid,
                      border_style="bright_blue",
