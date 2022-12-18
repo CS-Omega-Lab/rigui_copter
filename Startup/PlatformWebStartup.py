@@ -1,10 +1,17 @@
 #!/usr/bin/python3.9
+import sys
+import os
+
+current = os.path.dirname(os.path.realpath(__file__))
+parent = os.path.dirname(current)
+sys.path.append(parent)
+
 import time
 import os
 import configparser
 from netifaces import interfaces, ifaddresses, AF_INET
 
-from Platform.RobotDataManager import DataManager
+from Platform.DataManager import DataManager
 from Common.LogManager import LogManager
 from Common.AddressManager import AddressManager
 

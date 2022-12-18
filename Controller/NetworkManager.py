@@ -8,18 +8,18 @@ from Common.ConstStorage import ConstStorage as CS
 
 class NetworkDataClient:
     def __init__(self, hdm):
-        self.config = hdm.config
+        self.net_config = hdm.config
         self.hdm = hdm
         self.lgm = hdm.lgm
         self.remote_address = hdm.remote_address
-        self.data_port = int(self.config['network']['platform_data_port'])
+        self.data_port = int(self.net_config['network']['platform_data_port'])
         self.data = [
             CS.MID_VAL,  # Канал X
             CS.MID_VAL,  # Канал Y
-            CS.MID_VAL,  # Канал Z
+            CS.MIN_VAL,  # Канал Z
             CS.MID_VAL,  # Канал YAW
-            CS.MID_VAL,  # Блок моторов
-            CS.MIN_VAL  # Режим
+            CS.MIN_VAL,  # Блок моторов
+            CS.MIN_VAL   # Режим
         ]
         self.tx_thread = Thread(target=self.tx_void, daemon=True, args=())
         self.tx_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -56,12 +56,12 @@ class NetworkDataClient:
 
 class NetworkCommandClient:
     def __init__(self, hdm):
-        self.config = hdm.config
+        self.net_config = hdm.config
         self.hdm = hdm
         self.lgm = hdm.lgm
         self.command = 2
         self.remote_address = hdm.remote_address
-        self.command_port = int(self.config['network']['platform_command_port'])
+        self.command_port = int(self.net_config['network']['platform_command_port'])
         self.telemetry = [
             '-',  # Уровень сигнала
             '-',  # Пинг
@@ -99,21 +99,21 @@ class NetworkCommandClient:
         flag = True
         if data[0] == 1:
             self.hdm.lg('PLTF', 0,
-                        'Камера по адресу ' + self.config['devices'][
+                        'Камера по адресу ' + self.net_config['devices'][
                             'platform_video_dev'] + ' подключена.')
         else:
             self.hdm.lg('PLTF', 1,
-                        'Камера по адресу ' + self.config['devices'][
+                        'Камера по адресу ' + self.net_config['devices'][
                             'platform_video_dev'] + ' не подключена (code: ' + str(data[0]) + ').')
         if data[1] == 1:
             self.hdm.lg('PLTF', 0,
-                        'TTL-PPM по адресу ' + self.config['devices'][
+                        'TTL-PPM по адресу ' + self.net_config['devices'][
                             'platform_ttl_ppm_dev'] + ' подключён.')
         else:
             self.hdm.set_boot_lock()
             flag = False
             self.hdm.lg('PLTF', 1,
-                        'TTL-PPM по адресу ' + self.config['devices'][
+                        'TTL-PPM по адресу ' + self.net_config['devices'][
                             'platform_ttl_ppm_dev'] + ' не подключён (code: ' + str(data[0]) + ').')
         time.sleep(0.1)
         if flag:

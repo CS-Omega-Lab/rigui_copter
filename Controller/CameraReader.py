@@ -6,7 +6,7 @@ class CameraReader:
         self.hdm = hdm
 
     def start(self):
-        port = str('port='+self.hdm.config["network"]["platform_video_port"])
+        port = str('port=' + self.hdm.config["network"]["platform_video_port"])
         sp.Popen(
             ['gst-launch-1.0', 'udpsrc', port, '!',
              'application/x-rtp,encoding-name=JPEG,payload=26', '!',

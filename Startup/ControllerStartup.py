@@ -89,16 +89,12 @@ class Telemetry:
 
     def __rich__(self) -> Panel:
         content = Text()
-        content.append("Уровень сигнала связи: ", style="bold green")
-        content.append(str(self.data[0]) + "%\r\n")
         content.append("Время отклика:         ", style="bold green")
         content.append(str(self.data[1]) + " мс\r\n")
         content.append("Заряд аккумулятора:    ", style="bold green")
         content.append(str(self.data[2]) + "%\r\n")
-        content.append("Температура SoC:       ", style="bold green")
-        content.append(str(self.data[3]) + " °C\r\n")
-        content.append("Ток в силовой цепи:    ", style="bold green")
-        content.append(str(self.data[4]) + " А\r\n")
+        content.append("Нагрузка на моторы:    ", style="bold green")
+        content.append(str(self.data[4]) + " %\r\n")
         content_panel = Panel(
             Align.left(
                 content,
@@ -134,7 +130,7 @@ class Logs:
 
 
 lgm = LogManager()
-lgm.dlg('HOST', 3, 'Запускаюсь...')
+lgm.dlg('CNTR', 3, 'Запускаюсь...')
 config = configparser.ConfigParser()
 config.read("Assets/explora.cfg")
 rows = os.get_terminal_size()[1]

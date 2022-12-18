@@ -31,11 +31,6 @@ class TelemetryManager:
 
     def update(self):
         while True:
-            # p = subprocess.Popen("iwconfig", stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            # out = p.stdout.read().decode()
-            # m = re.findall('(wlan1+).*?Signal level=()', out, re.DOTALL)
-            # print(m)
-            # signal_level = int(abs(m[0]))
             signal_level = 0
 
             response_list = pythonping.ping(self.host, size=10, count=2)
@@ -45,11 +40,6 @@ class TelemetryManager:
             signal_ping = int(ping)
 
             battery_charge = 100
-
-            # p = subprocess.Popen("vcgencmd measure_temp", stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            # out = p.stdout.read().decode()
-            # m = re.findall(r'\d+', out)
-            # soc_temperature = m[0]
             soc_temperature = 0
 
             motor_summary = self.rdm.get_motors_summary()
@@ -64,4 +54,4 @@ class TelemetryManager:
                 load_current
             ]
 
-            time.sleep(0.2)
+            time.sleep(0.01)

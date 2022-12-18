@@ -14,7 +14,7 @@ class QReader:
         self.rdm = rdm
         self.host = rdm.local_address
         self.thread = Thread(target=self.stream, daemon=True, args=())
-        self.reader = VideoReader(rdm.config['devices']['video_dev'], self.lgm)
+        self.reader = VideoReader(rdm.net_config['devices']['video_dev'], self.lgm)
         self.counter = 0
         self.decoded = None
         self.found = False

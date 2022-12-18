@@ -17,7 +17,7 @@ class VideoReader:
         self.stream.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
         self.stream.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
         self.thread.start()
-        self.lgm.dlg('HOST', 1, 'StreamReader запущен.')
+        self.lgm.dlg('PLTF', 1, 'StreamReader запущен.')
         return self
 
     def stop(self):

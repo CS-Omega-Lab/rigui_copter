@@ -3,8 +3,8 @@ from threading import Thread
 
 from Platform.Drivers.VideoStreamer import VideoStreamer
 from Platform.QReader import QReader
-from Platform.RobotNetworkManager import NetworkDataClient
-from Platform.RobotNetworkManager import NetworkCommandClient
+from Platform.NetworkManager import NetworkDataClient
+from Platform.NetworkManager import NetworkCommandClient
 from Platform.TelemetryManager import TelemetryManager
 from Platform.Drivers.PPM_driver import PPM
 from Common.AddressManager import AddressManager
@@ -35,12 +35,12 @@ class DataManager:
         self.telemetry_manager = TelemetryManager(self, self.lgm)
 
         if not self.boot_lock:
-            self.copter_bus = PPM().start()
+            self.copter_bus = PPM(self).start()
             self.thread = Thread(target=self.operate, daemon=True, args=())
             self.qr_reader = None
             self.video_streamer = None
         else:
-            self.lgm.dlg('HOST', 1, 'Ошибка запуска DataManager: boot_lock. Запуск невозможен.')
+            self.lgm.dlg('PLTF', 1, 'Ошибка запуска DataManager: boot_lock. Запуск невозможен.')
 
     def start(self):
         if not self.boot_lock:
@@ -59,9 +59,8 @@ class DataManager:
         self.remote_address = remote
 
     def get_addresses(self):
-        am = AddressManager(self.lgm)
-        subnet = str(self.config['network']['subnet'])
-        local_address = am.get_local_address_by_subnet(subnet)
+        am = AddressManager(self.lgm, self.config)
+        local_address = am.get_local_address_by_subnet()
 
         if local_address:
             self.local_address = local_address
@@ -94,7 +93,7 @@ class DataManager:
             self.command_client.send_telemetry(self.telemetry_manager.get_telemetry())
             data = self.data_client.receive()
             self.motors_summary = int((abs(data[0] - CS.MID_VAL) + abs(data[1] - CS.MID_VAL) + abs(
-                data[2] - CS.MID_VAL) + abs(data[3] - CS.MID_VAL))/16)
+                data[2]) + abs(data[3] - CS.MID_VAL))/16)
             self.copter_bus.send([
                 int(data[0]/16),
                 int(data[1]/16),

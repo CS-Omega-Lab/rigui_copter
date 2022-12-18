@@ -6,7 +6,7 @@
 ## На роботе, RPI: 
 
 ```shell
-sudo Scripts/platform_install.sh
+curl -s https://raw.githubusercontent.com/CS-Omega-Lab/rigui_coter/master/Scripts/platform_install.sh | sudo bash -s
 ```
 
 ## На компьютере, Windows: 

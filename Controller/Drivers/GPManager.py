@@ -1,3 +1,5 @@
+import time
+
 from inputs import get_gamepad
 import threading
 
@@ -28,7 +30,7 @@ class GPManager:
 
         self.CopterX = CS.MID_VAL
         self.CopterY = CS.MID_VAL
-        self.CopterZ = CS.MID_VAL
+        self.CopterZ = CS.MIN_VAL
         self.CopterYW = CS.MID_VAL
 
         self.CopterArmed = 0
@@ -42,20 +44,29 @@ class GPManager:
 
     def start(self):
         try:
+            self.hdm.lgm.dlg('CNTR', 3, 'Ожидаю отклик геймпада...')
             get_gamepad()
             self._monitor_thread.start()
             self.hdm.lgm.dlg('CNTR', 3, 'Запуск GPManager: успешно.')
             self.hdm.lg('CNTR', 0, 'Запуск GPManager: успешно.')
         except Exception as e:
-            self.hdm.lgm.dlg('CNTR', 1, 'Ошибка запуска GPManager: '+str(e))
+            self.hdm.lgm.dlg('CNTR', 1, 'Ошибка запуска GPManager: ' + str(e))
             self.hdm.set_boot_lock()
         return self
 
     def get_vals(self):
+        if self.cop_z > CS.MID_VAL:
+            self.CopterZ = self.CopterZ + (self.cop_z-CS.MID_VAL)/800
+        elif self.cop_z < CS.MID_VAL:
+            self.CopterZ = self.CopterZ - (CS.MID_VAL-self.cop_z)/800
+        else:
+            self.CopterZ = self.CopterZ
+        self.CopterZ = self.CopterZ if self.CopterZ >= 0 else 0
+        self.CopterZ = self.CopterZ if self.CopterZ <= 4094 else 4094
         return [
             self.CopterX,
             self.CopterY,
-            self.CopterZ,
+            int(self.CopterZ),
             self.CopterYW,
             self.CopterArmed,
             self.CopterMode
@@ -63,11 +74,11 @@ class GPManager:
 
     def _monitor_controller(self):
         while True:
-            cop_z = ((CS.MID_VAL + self.lj_y if abs(self.lj_y) > 70 else CS.MID_VAL)-CS.MID_VAL)*2
-            self.CopterZ = cop_z if cop_z > 0 else 0
-            self.CopterYW = CS.MID_VAL + self.lj_x if abs(self.lj_x) > 150 else CS.MID_VAL
-            self.CopterX = CS.MID_VAL + self.rj_x if abs(self.rj_x) > 150 else CS.MID_VAL
-            self.CopterY = CS.MID_VAL + self.rj_y if abs(self.rj_y) > 150 else CS.MID_VAL
+            time.sleep(0.01)
+            self.cop_z = CS.MID_VAL + self.lj_y if abs(self.lj_y) > 400 else CS.MID_VAL
+            self.CopterYW = CS.MID_VAL + self.lj_x if abs(self.lj_x) > 400 else CS.MID_VAL
+            self.CopterX = CS.MID_VAL + self.rj_x if abs(self.rj_x) > 400 else CS.MID_VAL
+            self.CopterY = CS.MID_VAL + self.rj_y if abs(self.rj_y) > 400 else CS.MID_VAL
 
             events = get_gamepad()
             for event in events:
@@ -91,7 +102,7 @@ class GPManager:
                 elif event.code == 'BTN_TR':
                     self.rb = event.state
                     if (not event.state) and self.rb_last:
-                        if self.CopterMode+CS.MID_VAL > CS.MAX_VAL:
+                        if self.CopterMode + CS.MID_VAL > CS.MAX_VAL:
                             self.CopterMode = 0
                         else:
                             self.CopterMode += CS.MID_VAL

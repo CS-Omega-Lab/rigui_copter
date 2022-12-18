@@ -20,13 +20,12 @@ class DataManager:
         self.waiting = True
         self.boot_lock = False
 
-        self.local_address = None
         self.remote_address = None
 
         self.vals = [
             CS.MID_VAL,   # Канал X
             CS.MID_VAL,   # Канал Y
-            CS.MID_VAL,   # Канал Z
+            CS.MIN_VAL,   # Канал Z
             CS.MID_VAL,   # Канал YAW
             CS.MID_VAL,   # Блок моторов
             CS.MIN_VAL    # Режим
@@ -42,14 +41,7 @@ class DataManager:
 
         self.thread = Thread(target=self.update, daemon=True, args=())
 
-        if config['general']['controller'] == "gamepad":
-            self.input_manager = GPManager(self).start()
-        elif config['general']['controller'] == "keyboard":
-            self.lgm.dlg('CNTR', 1, 'Неподдерживаемый способ ввода: ' + str(config['general']['controller']))
-            self.boot_lock = True
-        else:
-            self.lgm.dlg('CNTR', 1, 'Неизвестный способ ввода: '+str(config['general']['controller']))
-            self.boot_lock = True
+        self.input_manager = GPManager(self).start()
 
         self.get_addresses()
         if self.remote_address:
@@ -75,14 +67,7 @@ class DataManager:
 
     def get_addresses(self):
         am = AddressManager(self.lgm, self.config)
-        subnet = str(self.config['network']['common_subnet'])
-        local_address = am.get_local_address_by_subnet(subnet)
         remote_address = am.get_remote_address_by_name("rpi")
-
-        if local_address:
-            self.local_address = local_address
-        else:
-            self.set_boot_lock()
 
         if remote_address:
             self.remote_address = remote_address
