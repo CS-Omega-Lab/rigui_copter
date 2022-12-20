@@ -14,12 +14,14 @@ class NetworkDataClient:
         self.remote_address = hdm.remote_address
         self.data_port = int(self.net_config['network']['platform_data_port'])
         self.data = [
-            CS.MID_VAL,  # Канал X
-            CS.MID_VAL,  # Канал Y
-            CS.MIN_VAL,  # Канал Z
-            CS.MID_VAL,  # Канал YAW
-            CS.MIN_VAL,  # Блок моторов
-            CS.MIN_VAL   # Режим
+            CS.MID_VAL, # Roll
+            CS.MID_VAL, # Pitch
+            CS.MID_VAL, # Yaw
+            CS.MIN_VAL, # Throttle
+            CS.MIN_VAL, # T1
+            CS.MIN_VAL, # T2
+            CS.MIN_VAL, # T3
+            CS.MIN_VAL  # T4
         ]
         self.tx_thread = Thread(target=self.tx_void, daemon=True, args=())
         self.tx_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -133,7 +135,7 @@ class NetworkCommandClient:
                     data = list(data)
                     self.print_init_info(data)
                     self.command = 1
-                time.sleep(0.2)
+                time.sleep(0.09)
         except Exception as e:
             self.hdm.lg('CNTR', 1, '[MX] Ошибка подключения или передачи: ' + str(e))
             self.command = 2

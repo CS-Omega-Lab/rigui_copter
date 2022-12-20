@@ -56,16 +56,16 @@ class State:
         content = Text()
 
         content.append("Режим: ", style="bold green")
-        if self.vals[5] == CS.MIN_VAL:
+        if self.vals[6] == CS.MIN_VAL:
             content.append("РУЧНОЙ\r\n", style="bold blue u")
-        elif self.vals[5] == CS.MID_VAL:
+        elif self.vals[6] == CS.MID_VAL:
             content.append("GPS (3D FIX)\r\n", style="bold blue u")
         else:
             content.append("АВТО\r\n", style="bold blue u")
 
         content.append("Моторы: ", style="bold green")
 
-        if self.vals[4] == CS.MIN_VAL:
+        if self.vals[7] == CS.MIN_VAL:
             content.append("DISARMED\r\n", style="bold gray u")
         else:
             content.append("ARMED\r\n", style="bold blue u")
@@ -91,8 +91,8 @@ class Telemetry:
         content = Text()
         content.append("Время отклика:         ", style="bold green")
         content.append(str(self.data[1]) + " мс\r\n")
-        content.append("Заряд аккумулятора:    ", style="bold green")
-        content.append(str(self.data[2]) + "%\r\n")
+        content.append("Заряд аккумулятора:    TBD\r\n", style="bold green")
+        # content.append(str(self.data[2]) + "%\r\n")
         content.append("Нагрузка на моторы:    ", style="bold green")
         content.append(str(self.data[4]) + " %\r\n")
         content_panel = Panel(

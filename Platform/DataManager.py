@@ -89,11 +89,11 @@ class DataManager:
     def operate(self):
         time.sleep(2)
         while True:
-            time.sleep(0.001)
+            time.sleep(0.01)
             self.command_client.send_telemetry(self.telemetry_manager.get_telemetry())
             data = self.data_client.receive()
             self.motors_summary = int((abs(data[0] - CS.MID_VAL) + abs(data[1] - CS.MID_VAL) + abs(
-                data[2]) + abs(data[3] - CS.MID_VAL))/16)
+                data[2] - CS.MID_VAL) + abs(data[3]))/8)
             self.copter_bus.send([
                 int(data[0]/16),
                 int(data[1]/16),
@@ -101,6 +101,6 @@ class DataManager:
                 int(data[3]/16),
                 int(data[4]/16),
                 int(data[5]/16),
-                127,
-                127,
+                int(data[6]/16),
+                int(data[7]/16),
             ])

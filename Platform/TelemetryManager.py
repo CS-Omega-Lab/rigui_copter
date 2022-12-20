@@ -54,4 +54,4 @@ class TelemetryManager:
                 load_current
             ]
 
-            time.sleep(0.01)
+            time.sleep(0.1)

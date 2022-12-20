@@ -3,7 +3,7 @@ from threading import Thread
 
 from Controller.NetworkManager import NetworkDataClient
 from Controller.NetworkManager import NetworkCommandClient
-from Controller.Drivers.GPManager import GPManager
+from Controller.Drivers.FSManager import FSManager
 from Controller.CameraReader import CameraReader
 from Common.AddressManager import AddressManager
 from Common.ConstStorage import ConstStorage as CS
@@ -23,12 +23,14 @@ class DataManager:
         self.remote_address = None
 
         self.vals = [
-            CS.MID_VAL,   # Канал X
-            CS.MID_VAL,   # Канал Y
-            CS.MIN_VAL,   # Канал Z
-            CS.MID_VAL,   # Канал YAW
-            CS.MID_VAL,   # Блок моторов
-            CS.MIN_VAL    # Режим
+            CS.MID_VAL, # Roll
+            CS.MID_VAL, # Pitch
+            CS.MID_VAL, # Yaw
+            CS.MIN_VAL, # Throttle
+            CS.MIN_VAL, # T1
+            CS.MIN_VAL, # T2
+            CS.MIN_VAL, # T3
+            CS.MIN_VAL  # T4
         ]
 
         self.telemetry = [
@@ -41,7 +43,7 @@ class DataManager:
 
         self.thread = Thread(target=self.update, daemon=True, args=())
 
-        self.input_manager = GPManager(self).start()
+        self.input_manager = FSManager(self).start()
 
         self.get_addresses()
         if self.remote_address:

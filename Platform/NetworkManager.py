@@ -14,12 +14,14 @@ class NetworkDataClient:
         self.local_address = rdm.local_address
         self.rx_buf = b''
         self.last_cmd = [
-            CS.MID_VAL,  # Канал X
-            CS.MID_VAL,  # Канал Y
-            CS.MIN_VAL,  # Канал Z
-            CS.MID_VAL,  # Канал YAW
-            CS.MIN_VAL,  # Блок моторов
-            CS.MIN_VAL   # Режим
+            CS.MID_VAL, # Roll
+            CS.MID_VAL, # Pitch
+            CS.MID_VAL, # Yaw
+            CS.MIN_VAL, # Throttle
+            CS.MIN_VAL, # T1
+            CS.MIN_VAL, # T2
+            CS.MIN_VAL, # T3
+            CS.MIN_VAL  # T4
         ]
         self.rx_thread = Thread(target=self.rx_void, daemon=True, args=())
         self.decode_thread = Thread(target=self.decode_void, daemon=True, args=())
@@ -62,7 +64,7 @@ class NetworkDataClient:
                 self.rdm.set_remote_address(str(client_address[0]))
                 self.rdm.lazy_process_start()
                 while True:
-                    data = connection.recv(64)
+                    data = connection.recv(128)
                     self.rx_buf += data
                     time.sleep(0.01)
             except Exception as e:
@@ -112,7 +114,7 @@ class NetworkCommandClient:
                         connection.sendall(bytes(self.rdm.get_init_data()))
                     if command[0] == 1:
                         connection.sendall(bytes(self.telemetry))
-                    time.sleep(0.01)
+                    time.sleep(0.1)
             except Exception as e:
                 self.lgm.dlg('PLTF', 1, '[MX] Ошибка подключения или передачи: ' + str(e))
                 self.rdm.drop_remote_address()
