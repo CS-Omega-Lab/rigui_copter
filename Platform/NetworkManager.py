@@ -72,6 +72,18 @@ class NetworkDataClient:
                 self.lgm.dlg('PLTF', 1, '[RX] Ошибка подключения или передачи: ' + str(e))
                 self.rdm.drop_remote_address()
                 self.rdm.stop_video_stream()
+                self.rx_buf = b''
+                time.sleep(0.1)
+                self.last_cmd = [
+                    CS.MIN_VAL,  # Roll
+                    CS.MIN_VAL,  # Pitch
+                    CS.MIN_VAL,  # Yaw
+                    CS.MIN_VAL,  # Throttle
+                    CS.MIN_VAL,  # T1
+                    CS.MIN_VAL,  # T2
+                    CS.MIN_VAL,  # T3
+                    CS.MIN_VAL  # T4
+                ]
             time.sleep(0.5)
 
 
