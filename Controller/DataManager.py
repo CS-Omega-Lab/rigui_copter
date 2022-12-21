@@ -4,7 +4,7 @@ from threading import Thread
 from Controller.NetworkManager import NetworkDataClient
 from Controller.NetworkManager import NetworkCommandClient
 from Controller.Drivers.FSManager import FSManager
-from Controller.CameraReader import CameraReader
+from Controller.Drivers.VideoReceiver import VideoReceiver
 from Common.AddressManager import AddressManager
 from Common.ConstStorage import ConstStorage as CS
 
@@ -22,23 +22,20 @@ class DataManager:
 
         self.remote_address = None
 
-        self.vals = [
-            CS.MID_VAL, # Roll
-            CS.MID_VAL, # Pitch
-            CS.MID_VAL, # Yaw
-            CS.MIN_VAL, # Throttle
-            CS.MIN_VAL, # T1
-            CS.MIN_VAL, # T2
-            CS.MIN_VAL, # T3
-            CS.MIN_VAL  # T4
+        self.data = [
+            CS.MID_VAL,  # Roll
+            CS.MID_VAL,  # Pitch
+            CS.MID_VAL,  # Yaw
+            CS.MIN_VAL,  # Throttle
+            CS.MIN_VAL,  # ArmDisarm
+            CS.MIN_VAL,  # T2
+            CS.MIN_VAL,  # FlightMode
+            CS.MIN_VAL   # T4
         ]
 
         self.telemetry = [
-            '-',  # Уровень сигнала
             '-',  # Пинг
-            '-',  # Заряд аккумулятора
-            '-',  # Температура
-            '-'   # Ток
+            '-',  # Ошибки
         ]
 
         self.thread = Thread(target=self.update, daemon=True, args=())
@@ -49,8 +46,7 @@ class DataManager:
         if self.remote_address:
             self.data_client = NetworkDataClient(self).start()
             self.command_client = NetworkCommandClient(self).start()
-        self.camera_reader = CameraReader(self).start()
-        time.sleep(2)
+        self.camera_reader = VideoReceiver(self).start()
 
     def set_boot_lock(self):
         self.boot_lock = True
@@ -62,7 +58,7 @@ class DataManager:
         return self.log_list
 
     def get_vals(self):
-        return self.vals
+        return self.data
 
     def get_telemetry(self):
         return self.telemetry
@@ -70,13 +66,13 @@ class DataManager:
     def get_addresses(self):
         am = AddressManager(self.lgm, self.config)
         remote_address = am.get_remote_address_by_name("rpi")
-
         if remote_address:
             self.remote_address = remote_address
         else:
             self.set_boot_lock()
 
     def start(self):
+        time.sleep(1)
         try:
             if not self.boot_lock:
                 self.thread.start()
@@ -92,8 +88,8 @@ class DataManager:
         while True:
             time.sleep(0.001)
             self.telemetry = self.command_client.get_telemetry()
-            self.vals = self.input_manager.get_vals()
-            self.data_client.send_info(self.vals)
+            self.data = self.input_manager.get_vals()
+            self.data_client.send_info(self.data)
 
     def lg(self, src, typ, message):
         if typ == 0:

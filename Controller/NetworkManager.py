@@ -14,14 +14,14 @@ class NetworkDataClient:
         self.remote_address = hdm.remote_address
         self.data_port = int(self.net_config['network']['platform_data_port'])
         self.data = [
-            CS.MID_VAL, # Roll
-            CS.MID_VAL, # Pitch
-            CS.MID_VAL, # Yaw
-            CS.MIN_VAL, # Throttle
-            CS.MIN_VAL, # T1
-            CS.MIN_VAL, # T2
-            CS.MIN_VAL, # T3
-            CS.MIN_VAL  # T4
+            CS.MID_VAL,  # Roll
+            CS.MID_VAL,  # Pitch
+            CS.MID_VAL,  # Yaw
+            CS.MIN_VAL,  # Throttle
+            CS.MIN_VAL,  # ArmDisarm
+            CS.MIN_VAL,  # T2
+            CS.MIN_VAL,  # FlightMode
+            CS.MIN_VAL   # T4
         ]
         self.tx_thread = Thread(target=self.tx_void, daemon=True, args=())
         self.tx_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -50,10 +50,10 @@ class NetworkDataClient:
         try:
             while True:
                 self.tx_socket.sendall(json.dumps(self.data).encode('utf-8'))
-                time.sleep(0.01)
+                time.sleep(0.001)
         except Exception as e:
             self.hdm.lg('CNTR', 1, '[TX] Ошибка подключения или передачи: ' + str(e))
-        time.sleep(1)
+            time.sleep(0.1)
 
 
 class NetworkCommandClient:
@@ -65,11 +65,8 @@ class NetworkCommandClient:
         self.remote_address = hdm.remote_address
         self.command_port = int(self.net_config['network']['platform_command_port'])
         self.telemetry = [
-            '-',  # Уровень сигнала
             '-',  # Пинг
-            '-',  # Заряд аккумулятора
-            '-',  # Температура
-            '-'  # Ток
+            '-',  # Ошибки
         ]
         self.mx_thread = Thread(target=self.mx_void, daemon=True, args=())
         self.mx_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -126,24 +123,21 @@ class NetworkCommandClient:
             while True:
                 if self.command == 1:
                     self.mx_socket.sendall(bytes([1]))
-                    data = self.mx_socket.recv(5)
+                    data = self.mx_socket.recv(2)
                     self.telemetry = list(data)
                 if self.command == 2:
                     time.sleep(1)
                     self.mx_socket.sendall(bytes([2]))
-                    data = self.mx_socket.recv(3)
+                    data = self.mx_socket.recv(2)
                     data = list(data)
                     self.print_init_info(data)
                     self.command = 1
-                time.sleep(0.09)
+                time.sleep(0.5)
         except Exception as e:
             self.hdm.lg('CNTR', 1, '[MX] Ошибка подключения или передачи: ' + str(e))
             self.command = 2
             self.telemetry = [
-                '-',  # Уровень сигнала
                 '-',  # Пинг
-                '-',  # Заряд аккумулятора
-                '-',  # Температура
-                '-'  # Ток
+                '-',  # Ошибки
             ]
-        time.sleep(1)
+            time.sleep(1)

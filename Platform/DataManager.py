@@ -1,8 +1,7 @@
 import time
 from threading import Thread
 
-from Platform.Drivers.VideoStreamer import VideoStreamer
-from Platform.QReader import QReader
+from Platform.Drivers.VideoSender import VideoStreamer
 from Platform.NetworkManager import NetworkDataClient
 from Platform.NetworkManager import NetworkCommandClient
 from Platform.TelemetryManager import TelemetryManager
@@ -20,6 +19,9 @@ class DataManager:
             0,
             0
         ]
+
+        self.tele_ctr = 0
+
         self.motors_summary = 0
         self.lgm = lgm
         self.local_address = None
@@ -58,6 +60,9 @@ class DataManager:
     def set_remote_address(self, remote):
         self.remote_address = remote
 
+    def stop_video_stream(self):
+        self.video_streamer.stop()
+
     def get_addresses(self):
         am = AddressManager(self.lgm, self.config)
         local_address = am.get_local_address_by_subnet()
@@ -73,34 +78,25 @@ class DataManager:
     def get_init_data(self):
         return self.init_data
 
-    def get_motors_summary(self):
-        return self.motors_summary
+    def set_stream_running(self):
+        self.video_stream_state = True
 
     def lazy_process_start(self):
-        time.sleep(2)
         while not self.remote_address:
-            time.sleep(1)
-        if self.mode:
+            time.sleep(0.1)
+        if not self.video_stream_state:
             self.video_streamer = VideoStreamer(self).start()
-        else:
-            self.qr_reader = QReader(self).start()
         self.telemetry_manager.start(self.remote_address)
 
     def operate(self):
-        time.sleep(2)
+        time.sleep(1)
+        self.command_client.send_telemetry(self.telemetry_manager.get_telemetry())
         while True:
-            time.sleep(0.01)
-            self.command_client.send_telemetry(self.telemetry_manager.get_telemetry())
+            time.sleep(0.001)
+            if self.tele_ctr < 10000:
+                self.tele_ctr += 1
+            else:
+                self.command_client.send_telemetry(self.telemetry_manager.get_telemetry())
+                self.tele_ctr = 0
             data = self.data_client.receive()
-            self.motors_summary = int((abs(data[0] - CS.MID_VAL) + abs(data[1] - CS.MID_VAL) + abs(
-                data[2] - CS.MID_VAL) + abs(data[3]))/8)
-            self.copter_bus.send([
-                int(data[0]/16),
-                int(data[1]/16),
-                int(data[2]/16),
-                int(data[3]/16),
-                int(data[4]/16),
-                int(data[5]/16),
-                int(data[6]/16),
-                int(data[7]/16),
-            ])
+            self.copter_bus.send(data)

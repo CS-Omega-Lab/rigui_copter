@@ -1,7 +1,7 @@
 import subprocess as sp
 
 
-class CameraReader:
+class VideoReceiver:
     def __init__(self, hdm):
         self.hdm = hdm
 
@@ -9,7 +9,7 @@ class CameraReader:
         port = str('port=' + self.hdm.config["network"]["platform_video_port"])
         sp.Popen(
             ['gst-launch-1.0', 'udpsrc', port, '!',
-             'application/x-rtp,encoding-name=JPEG,payload=26', '!',
+             'application/x-rtp,clock-rate=90000,encoding-name=JPEG,payload=26', '!',
              'rtpjpegdepay', '!', 'jpegdec', '!', 'd3d11videosink'],
             shell=True, stdout=sp.PIPE)
         self.hdm.lg('CNTR', 0, 'Запуск обработчика стрима: успешно.')

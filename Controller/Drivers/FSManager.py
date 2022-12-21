@@ -8,21 +8,20 @@ from Common.ConstStorage import ConstStorage as CS
 class FSManager:
     MAX_JOY_VAL = 11.36
 
-
     def __init__(self, hdm):
         self.hdm = hdm
         self.wab = WinApiBinding()
         self.ret, self.caps, self.st_info = False, None, None
 
         self.vals = [
-            CS.MID_VAL, # Roll
-            CS.MID_VAL, # Pitch
-            CS.MID_VAL, # Yaw
-            CS.MIN_VAL, # Throttle
-            CS.MIN_VAL, # T1
-            CS.MIN_VAL, # T2
-            CS.MIN_VAL, # T3
-            CS.MIN_VAL  # T4
+            CS.MID_VAL,  # Roll
+            CS.MID_VAL,  # Pitch
+            CS.MID_VAL,  # Yaw
+            CS.MIN_VAL,  # Throttle
+            CS.MIN_VAL,  # T1
+            CS.MIN_VAL,  # T2
+            CS.MIN_VAL,  # T3
+            CS.MIN_VAL   # T4
         ]
 
         self.thread = Thread(target=self.update, daemon=True, args=())
@@ -30,7 +29,7 @@ class FSManager:
     def start(self):
         try:
             self.hdm.lgm.dlg('CNTR', 3, 'Ожидаю отклик аппаратуры...')
-            self.ret, self.caps = self.wab.joyGetDevCaps( 0)
+            self.ret, self.caps = self.wab.joyGetDevCaps(0)
             if self.ret:
                 self.ret, self.st_info = self.wab.joyGetPosEx(0)
                 self.thread.start()
@@ -49,23 +48,23 @@ class FSManager:
 
     def update(self):
         while True:
-            time.sleep(0.01)
             ret, info = self.wab.joyGetPosEx(0)
             if ret:
                 buttons = [(1 << i) & info.dwButtons != 0 for i in range(self.caps.wNumButtons)]
-                axis_xyz = [info.dwXpos-self.st_info.dwXpos, info.dwYpos-self.st_info.dwYpos, info.dwZpos-self.st_info.dwZpos]
-                axis_ruv = [info.dwRpos-self.st_info.dwRpos, info.dwUpos-self.st_info.dwUpos, info.dwVpos-self.st_info.dwVpos]
+                axis_xyz = [info.dwXpos - self.st_info.dwXpos, info.dwYpos - self.st_info.dwYpos,
+                            info.dwZpos - self.st_info.dwZpos]
+                axis_ruv = [info.dwRpos - self.st_info.dwRpos, info.dwUpos - self.st_info.dwUpos,
+                            info.dwVpos - self.st_info.dwVpos]
                 self.vals = [
-                    int(CS.MID_VAL+axis_xyz[0]/FSManager.MAX_JOY_VAL),
-                    int(CS.MID_VAL+axis_xyz[1]/FSManager.MAX_JOY_VAL),
-                    int(CS.MID_VAL+axis_ruv[2]/FSManager.MAX_JOY_VAL),
-                    int(CS.MID_VAL+axis_xyz[2]/FSManager.MAX_JOY_VAL),
-                    4096 if axis_ruv[0] > 0 else 0,
-                    4096 if buttons[3] > 0 else 0,
-                    4096 if axis_ruv[1] > 0 else 2047 if axis_ruv[1] == 0 else 0,
-                    4096 if buttons[7] > 0 else 0
+                    int(CS.MID_VAL + axis_xyz[0] / FSManager.MAX_JOY_VAL),
+                    int(CS.MID_VAL + axis_xyz[1] / FSManager.MAX_JOY_VAL),
+                    int(CS.MID_VAL + axis_ruv[2] / FSManager.MAX_JOY_VAL),
+                    int(CS.MID_VAL + axis_xyz[2] / FSManager.MAX_JOY_VAL),
+                    4094 if buttons[7] > 0 else 0,
+                    4094 if buttons[3] > 0 else 0,
+                    4094 if axis_ruv[1] > 0 else 2047 if axis_ruv[1] == 0 else 0,
+                    4094 if axis_ruv[0] > 0 else 0,
                 ]
-
 
 
 class WinApiBinding:
@@ -161,6 +160,3 @@ class JOYINFOEX:
         self.dwSize, self.dwFlags, \
             self.dwXpos, self.dwYpos, self.dwZpos, self.dwRpos, self.dwUpos, self.dwVpos, \
             self.dwButtons, self.dwButtonNumber, self.dwPOV, self.dwReserved1, self.dwReserved2 = uint_array
-
-
-

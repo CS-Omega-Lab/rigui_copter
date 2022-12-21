@@ -7,9 +7,7 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 import time
-import os
 import configparser
-from netifaces import interfaces, ifaddresses, AF_INET
 
 from Platform.DataManager import DataManager
 from Common.LogManager import LogManager
@@ -19,14 +17,14 @@ lgm = LogManager()
 config = configparser.ConfigParser()
 config.read("Assets/explora.cfg")
 
-lgm.dlg("ROBOT", 3, "Запускаюсь...")
+lgm.dlg("PLTF", 3, "Запускаюсь...")
 
-am = AddressManager(lgm)
-am.wait_for_network(config['network']['subnet'])
+am = AddressManager(lgm, config)
+am.wait_for_network()
 
-data_manager = DataManager(config, lgm, False).start()
+data_manager = DataManager(config, lgm).start()
 
-lgm.dlg('ROBOT', 3, 'Робот готов.')
+lgm.dlg('PLTF', 3, 'Робот готов.')
 
 while True:
-    time.sleep(10)
+    time.sleep(0.1)

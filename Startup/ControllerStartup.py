@@ -41,7 +41,7 @@ class Header:
         grid.add_column(justify="center", ratio=1)
         grid.add_column(justify="right")
         grid.add_row(
-            "[b] [Powered by EXPLORA] RiGUI Platform Control V5.3.1"
+            "[b] [Powered by EXPLORA] RiGUI Platform Control V5.7.1"
         )
         return Panel(grid,
                      border_style="bright_blue",
@@ -89,12 +89,10 @@ class Telemetry:
 
     def __rich__(self) -> Panel:
         content = Text()
-        content.append("Время отклика:         ", style="bold green")
-        content.append(str(self.data[1]) + " мс\r\n")
-        content.append("Заряд аккумулятора:    TBD\r\n", style="bold green")
-        # content.append(str(self.data[2]) + "%\r\n")
-        content.append("Нагрузка на моторы:    ", style="bold green")
-        content.append(str(self.data[4]) + " %\r\n")
+        content.append("Пинг:   ", style="bold green")
+        content.append(str(self.data[0]) + " мс\r\n")
+        content.append("Ошибки: ", style="bold green")
+        content.append(str(self.data[1]) + "\r\n")
         content_panel = Panel(
             Align.left(
                 content,
@@ -146,7 +144,7 @@ layout["telemetry"].update(Telemetry(data_manager))
 
 with Live(layout, refresh_per_second=100, screen=True):
     while True:
-        time.sleep(0.01)
+        time.sleep(0.05)
         layout["logs"].update(Logs(data_manager))
         layout["state"].update(State(data_manager))
         layout["telemetry"].update(Telemetry(data_manager))

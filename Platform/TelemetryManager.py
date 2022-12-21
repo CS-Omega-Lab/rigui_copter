@@ -10,12 +10,10 @@ class TelemetryManager:
     def __init__(self, rdm, lgm):
         self.rdm = rdm
         self.lgm = lgm
+        self.started = False
         self.telemetry = [
-            0,  # Уровень сигнала
-            0,    # Пинг
-            0,  # Заряд аккумулятора
-            0,  # Температура
-            0   # Ток
+            0,  # Пинг
+            0,  # Состояние ошибки
         ]
         self.host = ''
 
@@ -23,7 +21,9 @@ class TelemetryManager:
 
     def start(self, host):
         self.host = host
-        self.thread.start()
+        if not self.started:
+            self.thread.start()
+            self.started = True
         return self
 
     def get_telemetry(self):
@@ -31,27 +31,13 @@ class TelemetryManager:
 
     def update(self):
         while True:
-            signal_level = 0
-
-            response_list = pythonping.ping(self.host, size=10, count=2)
+            response_list = pythonping.ping(self.host, size=10, count=1)
             ping = response_list.rtt_avg_ms
             if ping > 255:
                 ping = 255
             signal_ping = int(ping)
-
-            battery_charge = 100
-            soc_temperature = 0
-
-            motor_summary = self.rdm.get_motors_summary()
-            diff = abs(motor_summary) / 10
-            load_current = int(diff)
-
             self.telemetry = [
-                signal_level,
                 signal_ping,
-                battery_charge,
-                soc_temperature,
-                load_current
+                0
             ]
-
             time.sleep(0.1)

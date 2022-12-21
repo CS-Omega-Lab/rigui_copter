@@ -14,23 +14,25 @@ class NetworkDataClient:
         self.local_address = rdm.local_address
         self.rx_buf = b''
         self.last_cmd = [
-            CS.MID_VAL, # Roll
-            CS.MID_VAL, # Pitch
-            CS.MID_VAL, # Yaw
-            CS.MIN_VAL, # Throttle
-            CS.MIN_VAL, # T1
-            CS.MIN_VAL, # T2
-            CS.MIN_VAL, # T3
+            CS.MID_VAL,  # Roll
+            CS.MID_VAL,  # Pitch
+            CS.MID_VAL,  # Yaw
+            CS.MIN_VAL,  # Throttle
+            CS.MIN_VAL,  # T1
+            CS.MIN_VAL,  # T2
+            CS.MIN_VAL,  # T3
             CS.MIN_VAL  # T4
         ]
         self.rx_thread = Thread(target=self.rx_void, daemon=True, args=())
         self.decode_thread = Thread(target=self.decode_void, daemon=True, args=())
         self.rx_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.ready = True
-        self.lgm.dlg('PLTF', 3, '[RX] Открываю сокет: ' + str((self.local_address, int(self.net_config['platform_data_port']))))
+        self.lgm.dlg('PLTF', 3,
+                     '[RX] Открываю сокет: ' + str((self.local_address, int(self.net_config['platform_data_port']))))
         try:
             self.rx_socket.bind((self.local_address, int(self.net_config['platform_data_port'])))
-            self.lgm.dlg('PLTF', 3, '[RX] Сокет открыт: ' + str((self.local_address, int(self.net_config['platform_data_port']))))
+            self.lgm.dlg('PLTF', 3,
+                         '[RX] Сокет открыт: ' + str((self.local_address, int(self.net_config['platform_data_port']))))
         except Exception as e:
             self.lgm.dlg('PLTF', 1, '[RX] Ошибка привязки сокета: ' + str(e))
             self.ready = False
@@ -45,13 +47,12 @@ class NetworkDataClient:
 
     def decode_void(self):
         while True:
-            cp = self.rx_buf
             time.sleep(0.001)
+            cp = self.rx_buf
             m_v1 = cp.find(b'\x5b')
             m_v2 = cp.find(b'\x5d')
-            if b'\x5b' in cp and b'\x5d' in cp:
-                msg = cp[m_v1:m_v2 + 1]
-                self.last_cmd = list(json.loads(msg.decode('utf-8')))
+            if m_v1 != -1 and m_v2 != -1:
+                self.last_cmd = list(json.loads(cp[m_v1:m_v2 + 1].decode('utf-8')))
                 self.rx_buf = self.rx_buf[m_v2 + 1:len(self.rx_buf)]
 
     def rx_void(self):
@@ -64,13 +65,14 @@ class NetworkDataClient:
                 self.rdm.set_remote_address(str(client_address[0]))
                 self.rdm.lazy_process_start()
                 while True:
-                    data = connection.recv(128)
+                    data = connection.recv(64)
                     self.rx_buf += data
-                    time.sleep(0.01)
+                    time.sleep(0.001)
             except Exception as e:
                 self.lgm.dlg('PLTF', 1, '[RX] Ошибка подключения или передачи: ' + str(e))
                 self.rdm.drop_remote_address()
-            time.sleep(1)
+                self.rdm.stop_video_stream()
+            time.sleep(0.5)
 
 
 class NetworkCommandClient:
@@ -83,11 +85,13 @@ class NetworkCommandClient:
         self.mx_thread = Thread(target=self.mx_void, daemon=True, args=())
         self.mx_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.ready = True
-        self.lgm.dlg('PLTF', 3, '[MX] Открываю сокет: ' + str((self.local_address, int(self.net_config['platform_command_port']))))
+        self.lgm.dlg('PLTF', 3,
+                     '[MX] Открываю сокет: ' + str((self.local_address, int(self.net_config['platform_command_port']))))
         try:
             self.mx_socket.bind((self.local_address, int(self.net_config['platform_command_port'])))
             self.lgm.dlg('PLTF', 3,
-                         '[MX] Сокет открыт: ' + str((self.local_address, int(self.net_config['platform_command_port']))))
+                         '[MX] Сокет открыт: ' + str(
+                             (self.local_address, int(self.net_config['platform_command_port']))))
         except Exception as e:
             self.lgm.dlg('PLTF', 1, '[MX] Ошибка привязки сокета: ' + str(e))
             self.ready = False
@@ -110,12 +114,13 @@ class NetworkCommandClient:
                     data = connection.recv(1)
                     command = list(data)
                     if command[0] == 2:
-                        time.sleep(2)
+                        time.sleep(1)
                         connection.sendall(bytes(self.rdm.get_init_data()))
                     if command[0] == 1:
                         connection.sendall(bytes(self.telemetry))
-                    time.sleep(0.1)
+                    time.sleep(0.4)
             except Exception as e:
                 self.lgm.dlg('PLTF', 1, '[MX] Ошибка подключения или передачи: ' + str(e))
                 self.rdm.drop_remote_address()
-            time.sleep(1)
+                self.rdm.stop_video_stream()
+            time.sleep(0.5)

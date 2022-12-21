@@ -16,9 +16,10 @@ class PPM:
             self.available = False
         else:
             self.rdm.lgm.dlg('PLTF', 0, 'Устройство TTL-PPM на ' + rdm.devices['platform_ttl_ppm_dev'] + ' подключено.')
+            self.rdm.update_init_data(1, 1)
             self.ser = serial.Serial(rdm.devices['platform_ttl_ppm_dev'], 9600)
             self.channels = [127, 127, 127, 127, 127, 127, 127, 127]
-            self.next_channels = [127, 127, 127, 127, 127, 127, 127, 127]
+            self.data = [127, 127, 127, 127, 127, 127, 127, 127]
             self.thread = Thread(target=self.roll, daemon=True, args=())
 
     def start(self):
@@ -33,11 +34,9 @@ class PPM:
                 self.ser.write(bytes([255]))
                 for i in range(len(self.channels)):
                     self.ser.write(bytes([self.channels[i]]))
-                self.channels = self.next_channels
+                self.channels = self.data
 
-    def send(self, new_channels):
-        new = new_channels
-        if not(len(new) == 8):
-            self.rdm.lgm.dlg('PLTF', 1, 'Неверная длина массива передачи.')
-        self.next_channels = new
+    def send(self, data):
+        pass
+        # self.data = data
 

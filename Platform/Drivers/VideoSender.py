@@ -7,6 +7,7 @@ class VideoStreamer:
         self.rdm = rdm
         self.lgm = rdm.lgm
         self.allowed = True
+        self.running = False
         self.client = [
             rdm.remote_address,
             rdm.config['network']['platform_video_port']
@@ -22,14 +23,22 @@ class VideoStreamer:
         self.process = None
 
     def start(self):
-        device = self.rdm.devices['platform_video_dev']
-        if self.allowed:
-            self.process = sp.Popen([
-                'gst-launch-1.0 v4l2src device=' + device +
-                ' ! "image/jpeg,width=1280, height=720,framerate=30/1" ! rtpjpegpay ! udpsink host=' +
-                self.client[0] + ' port=' + str(self.client[1])],
-                shell=True, stdout=sp.PIPE)
+        if self.running:
+            self.lgm.dlg('PLTF', 1, 'Поток стрима уже запущен.')
+        else:
+            self.rdm.set_stream_running()
+            device = self.rdm.devices['platform_video_dev']
+            if self.allowed:
+                self.process = sp.Popen([
+                    'gst-launch-1.0 v4l2src device=' + device +
+                    ' ! "image/jpeg,width=800,height=600,framerate=30/1" ! rtpjpegpay ! udpsink host=' +
+                    self.client[0] + ' port=' + str(self.client[1])],
+                    shell=True, stdout=sp.PIPE)
+            self.running = True
         return self
 
     def stop(self):
-        self.process.terminate()
+        if self.running:
+            self.lgm.dlg('PLTF', 0, 'Останавливаю стрим...')
+            self.process.terminate()
+            self.running = False
