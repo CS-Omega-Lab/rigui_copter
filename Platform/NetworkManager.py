@@ -52,7 +52,8 @@ class NetworkDataClient:
             m_v1 = cp.find(b'\x5b')
             m_v2 = cp.find(b'\x5d')
             if m_v1 != -1 and m_v2 != -1:
-                self.last_cmd = list(json.loads(cp[m_v1:m_v2 + 1].decode('utf-8')))
+                # self.last_cmd = list(json.loads(cp[m_v1:m_v2 + 1].decode('utf-8')))
+                self.last_cmd = cp[m_v1:m_v2 + 1]
                 self.rx_buf = self.rx_buf[m_v2 + 1:len(self.rx_buf)]
 
     def rx_void(self):
