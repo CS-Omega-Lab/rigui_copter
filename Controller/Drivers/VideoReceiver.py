@@ -10,7 +10,7 @@ class VideoReceiver:
         cmd = ['gst-launch-1.0', '-e', 'udpsrc', port, '!',
                'application/x-rtp,clock-rate=90000,encoding-name=JPEG,payload=26', '!', 'rtpjpegdepay', '!', 'jpegdec',
                '!', 'tee', 'name=t', '!', 'queue', '!', 'd3d11videosink', 'async=false', 't.', '!', 'queue', '!',
-               'x264enc', '!', 'mp4mux', '!', 'filesink', 'location=platform_rec.mp4', 'async=false']
+               'x264enc', 'pass=5 quantizer=25 speed-preset=6', '!', 'mp4mux', '!', 'filesink', 'location=platform_rec.mp4', 'async=false']
         sp.Popen(
             cmd,
             shell=True, stdout=sp.PIPE)
