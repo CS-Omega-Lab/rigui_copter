@@ -10,14 +10,16 @@ curl -s https://raw.githubusercontent.com/CS-Omega-Lab/rigui_coter/master/Script
 ```
 
 ## На компьютере, Windows: 
-Сначала устанавливаем:
+Сначала скачиваем и устанавливаем:
 ```shell
 https://www.python.org/ftp/python/3.11.0/python-3.11.0-amd64.exe
 https://gstreamer.freedesktop.org/data/pkg/windows/1.20.4/msvc/gstreamer-1.0-msvc-x86_64-1.20.4.msi
 https://gstreamer.freedesktop.org/data/pkg/windows/1.20.4/msvc/gstreamer-1.0-devel-msvc-x86_64-1.20.4.msi
 ```
-Затем модули Python:
+Затем:
 ```shell
+git clone https://github.com/CS-Omega-Lab/rigui_copter
+cd rigui_copter
 ./Scripts/controller_install.bat
 ```
 

@@ -1,6 +1,3 @@
-import random
-import re
-import subprocess
 import time
 from threading import Thread
 import pythonping

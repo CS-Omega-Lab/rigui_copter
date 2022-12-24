@@ -1,16 +1,14 @@
 import ctypes
-import time
 from threading import Thread
 
 from Common.ConstStorage import ConstStorage as CS
 
 
 class FSManager:
-    MAX_JOY_VAL = 11.36
 
     def __init__(self, hdm):
         self.hdm = hdm
-        self.wab = WinApiBinding()
+        self.wab = WinApiBinding(hdm)
         self.ret, self.caps, self.st_info = False, None, None
 
         self.vals = [
@@ -56,19 +54,19 @@ class FSManager:
                 axis_ruv = [info.dwRpos - self.st_info.dwRpos, info.dwUpos - self.st_info.dwUpos,
                             info.dwVpos - self.st_info.dwVpos]
                 self.vals = [
-                    int(CS.MID_VAL + axis_xyz[0] / FSManager.MAX_JOY_VAL),
-                    int(CS.MID_VAL + axis_xyz[1] / FSManager.MAX_JOY_VAL),
-                    int(CS.MID_VAL + axis_ruv[2] / FSManager.MAX_JOY_VAL),
-                    int(CS.MID_VAL + axis_xyz[2] / FSManager.MAX_JOY_VAL),
-                    4094 if buttons[7] > 0 else 0,
-                    4094 if buttons[3] > 0 else 0,
-                    4094 if axis_ruv[1] > 0 else 2047 if axis_ruv[1] == 0 else 0,
-                    4094 if axis_ruv[0] > 0 else 0,
+                    int(CS.MID_VAL + axis_xyz[0] / CS.MAX_JOY_VAL),
+                    int(CS.MID_VAL + axis_xyz[1] / CS.MAX_JOY_VAL),
+                    int(CS.MID_VAL + axis_ruv[2] / CS.MAX_JOY_VAL),
+                    int(CS.MID_VAL + axis_xyz[2] / CS.MAX_JOY_VAL),
+                    CS.MAX_VAL if buttons[7] > CS.MIN_VAL else CS.MIN_VAL,
+                    CS.MAX_VAL if buttons[3] > CS.MIN_VAL else CS.MIN_VAL,
+                    CS.MAX_VAL if axis_ruv[1] > CS.MIN_VAL else CS.MID_VAL if axis_ruv[1] == CS.MIN_VAL else CS.MIN_VAL,
+                    CS.MAX_VAL if axis_ruv[0] > CS.MIN_VAL else CS.MIN_VAL,
                 ]
 
 
 class WinApiBinding:
-    def __init__(self):
+    def __init__(self, hdm):
         try:
             winmm_dll = ctypes.WinDLL('winmm.dll')
             joy_get_num_devs_proto = ctypes.WINFUNCTYPE(ctypes.c_uint)
@@ -81,8 +79,8 @@ class WinApiBinding:
             joy_get_pos_ex_proto = ctypes.WINFUNCTYPE(ctypes.c_uint, ctypes.c_uint, ctypes.c_void_p)
             joy_get_pos_ex_param = (1, "uJoyID", 0), (1, "pji", None)
             self.joy_get_pos_ex_func = joy_get_pos_ex_proto(("joyGetPosEx", winmm_dll), joy_get_pos_ex_param)
-        except:
-            winmm_dll = None
+        except Exception as e:
+            hdm.lgm.dlg('CNTR', 1, 'Ошибка запуска FSManager: ' + str(e))
 
     def joyGetNumDevs(self):
         try:

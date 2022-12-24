@@ -41,7 +41,7 @@ class Header:
         grid.add_column(justify="center", ratio=1)
         grid.add_column(justify="right")
         grid.add_row(
-            "[b] [Powered by EXPLORA] RiGUI Platform Control V5.7.1"
+            "[b] [Powered by EXPLORA] RiGUI Platform Control V5.8.9"
         )
         return Panel(grid,
                      border_style="bright_blue",
