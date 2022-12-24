@@ -1,5 +1,4 @@
 import ctypes
-import time
 from threading import Thread
 
 from Common.ConstStorage import ConstStorage as CS
@@ -9,7 +8,7 @@ class FSManager:
 
     def __init__(self, hdm):
         self.hdm = hdm
-        self.wab = WinApiBinding()
+        self.wab = WinApiBinding(hdm)
         self.ret, self.caps, self.st_info = False, None, None
 
         self.vals = [
@@ -67,7 +66,7 @@ class FSManager:
 
 
 class WinApiBinding:
-    def __init__(self):
+    def __init__(self, hdm):
         try:
             winmm_dll = ctypes.WinDLL('winmm.dll')
             joy_get_num_devs_proto = ctypes.WINFUNCTYPE(ctypes.c_uint)
@@ -80,8 +79,8 @@ class WinApiBinding:
             joy_get_pos_ex_proto = ctypes.WINFUNCTYPE(ctypes.c_uint, ctypes.c_uint, ctypes.c_void_p)
             joy_get_pos_ex_param = (1, "uJoyID", 0), (1, "pji", None)
             self.joy_get_pos_ex_func = joy_get_pos_ex_proto(("joyGetPosEx", winmm_dll), joy_get_pos_ex_param)
-        except:
-            winmm_dll = None
+        except Exception as e:
+            hdm.lgm.dlg('CNTR', 1, 'Ошибка запуска FSManager: ' + str(e))
 
     def joyGetNumDevs(self):
         try:

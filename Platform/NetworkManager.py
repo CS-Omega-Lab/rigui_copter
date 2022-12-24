@@ -1,6 +1,5 @@
 import socket
 import time
-import json
 from threading import Thread
 
 from Common.ConstStorage import ConstStorage as CS

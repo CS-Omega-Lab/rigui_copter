@@ -1,2 +1,2 @@
 pause
-py ./HostBootstrap.py
+py Startup/ControllerStartup.py

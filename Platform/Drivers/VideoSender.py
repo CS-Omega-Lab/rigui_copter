@@ -40,5 +40,5 @@ class VideoStreamer:
     def stop(self):
         if self.running:
             self.lgm.dlg('PLTF', 0, 'Останавливаю стрим...')
-            self.process.terminate()
+            self.process.kill()
             self.running = False

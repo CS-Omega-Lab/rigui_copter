@@ -7,21 +7,13 @@ from Platform.NetworkManager import NetworkCommandClient
 from Platform.TelemetryManager import TelemetryManager
 from Platform.Drivers.PPM_driver import PPM
 from Common.AddressManager import AddressManager
-from Common.ConstStorage import ConstStorage as CS
 
 
 class DataManager:
-    def __init__(self, config, lgm, mode=True):
+    def __init__(self, config, lgm):
         self.config = config
-        self.mode = mode
         self.telemetry = []
-        self.init_data = [
-            0,
-            0
-        ]
-
-        self.tele_ctr = 0
-
+        self.init_data = [0,0]
         self.motors_summary = 0
         self.lgm = lgm
         self.local_address = None
@@ -93,10 +85,5 @@ class DataManager:
         self.command_client.send_telemetry(self.telemetry_manager.get_telemetry())
         while True:
             time.sleep(0.001)
-            if self.tele_ctr < 10000:
-                self.tele_ctr += 1
-            else:
-                self.command_client.send_telemetry(self.telemetry_manager.get_telemetry())
-                self.tele_ctr = 0
-            data = self.data_client.receive()
-            self.copter_bus.send(data)
+            self.command_client.send_telemetry(self.telemetry_manager.get_telemetry())
+            self.copter_bus.send(self.data_client.receive())
