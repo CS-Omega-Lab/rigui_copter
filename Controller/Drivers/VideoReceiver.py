@@ -9,7 +9,6 @@ class VideoReceiver:
     def start(self):
         port = str('port=' + self.hdm.config["network"]["platform_video_port"])
         date = str(strftime("%Y-%m-%d_%H-%M-%S", gmtime()))
-        print(date)
         cmd = ['gst-launch-1.0', '-e', 'udpsrc', port, '!',
                'application/x-rtp,clock-rate=90000,encoding-name=JPEG,payload=26', '!', 'rtpjpegdepay', '!', 'jpegdec',
                '!', 'tee', 'name=t', '!', 'queue', '!', 'd3d11videosink', 'async=false', 't.', '!', 'queue', '!',
