@@ -12,16 +12,7 @@ class NetworkDataClient:
         self.lgm = lgm
         self.local_address = rdm.local_address
         self.rx_buf = b''
-        self.last_cmd = [
-            CS.MID_VAL,  # Roll
-            CS.MID_VAL,  # Pitch
-            CS.MID_VAL,  # Yaw
-            CS.MIN_VAL,  # Throttle
-            CS.MIN_VAL,  # T1
-            CS.MIN_VAL,  # T2
-            CS.MIN_VAL,  # T3
-            CS.MIN_VAL  # T4
-        ]
+        self.last_cmd = b'[127, 127, 0, 127, 0, 0, 0, 0]'
         self.rx_thread = Thread(target=self.rx_void, daemon=True, args=())
         self.decode_thread = Thread(target=self.decode_void, daemon=True, args=())
         self.rx_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -74,16 +65,7 @@ class NetworkDataClient:
                 self.rdm.stop_video_stream()
                 self.rx_buf = b''
                 time.sleep(0.1)
-                self.last_cmd = [
-                    CS.MIN_VAL,  # Roll
-                    CS.MIN_VAL,  # Pitch
-                    CS.MIN_VAL,  # Yaw
-                    CS.MIN_VAL,  # Throttle
-                    CS.MIN_VAL,  # T1
-                    CS.MIN_VAL,  # T2
-                    CS.MIN_VAL,  # T3
-                    CS.MIN_VAL  # T4
-                ]
+                self.last_cmd = b'[127, 127, 0, 127, 0, 0, 0, 0]'
             time.sleep(0.5)
 
 

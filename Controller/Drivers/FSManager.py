@@ -14,8 +14,8 @@ class FSManager:
         self.vals = [
             CS.MID_VAL,  # Roll
             CS.MID_VAL,  # Pitch
-            CS.MID_VAL,  # Yaw
-            CS.MIN_VAL,  # Throttle
+            CS.MIN_VAL,  # Yaw
+            CS.MID_VAL,  # Throttle
             CS.MIN_VAL,  # T1
             CS.MIN_VAL,  # T2
             CS.MIN_VAL,  # T3
@@ -56,11 +56,11 @@ class FSManager:
                 self.vals = [
                     int(CS.MID_VAL + axis_xyz[0] / CS.MAX_JOY_VAL),
                     int(CS.MID_VAL + axis_xyz[1] / CS.MAX_JOY_VAL),
-                    int(CS.MID_VAL + axis_ruv[2] / CS.MAX_JOY_VAL),
                     int(CS.MID_VAL + axis_xyz[2] / CS.MAX_JOY_VAL),
-                    CS.MAX_VAL if buttons[7] > CS.MIN_VAL else CS.MIN_VAL,
-                    CS.MAX_VAL if axis_ruv[0] > CS.MIN_VAL else CS.MIN_VAL,
+                    int(CS.MID_VAL + axis_ruv[2] / CS.MAX_JOY_VAL),
                     CS.MAX_VAL if axis_ruv[1] > CS.MIN_VAL else CS.MID_VAL if axis_ruv[1] == CS.MIN_VAL else CS.MIN_VAL,
+                    CS.MAX_VAL if axis_ruv[0] > CS.MIN_VAL else CS.MIN_VAL,
+                    CS.MAX_VAL if buttons[7] > CS.MIN_VAL else CS.MIN_VAL,
                     CS.MAX_VAL if buttons[3] > CS.MIN_VAL else CS.MIN_VAL,
                 ]
 
