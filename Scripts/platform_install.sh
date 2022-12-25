@@ -16,9 +16,9 @@ setcap cap_net_raw+ep "$(readlink -f "$(which python3)")"
 su -c "git clone https://github.com/CS-Omega-Lab/rigui_copter" pi
 su -c "cd rigui_copter" pi || exit
 apt install -y npm
-npm install pm2 -g
+sudo npm install pm2 -g
 su -c "pm2 startup" pi
+sudo env PATH="$PATH":/usr/bin /usr/local/lib/node_modules/pm2/bin/pm2 startup systemd -u pi --hp /home/pi
 su -c "pm2 ls" pi
 su -c "pm2 start Startup/PlatformStartup.py" pi
-env PATH="$PATH":/usr/bin /usr/local/lib/node_modules/pm2/bin/pm2 startup systemd -u pi --hp /home/pi
 su -c "pm2 save" pi
