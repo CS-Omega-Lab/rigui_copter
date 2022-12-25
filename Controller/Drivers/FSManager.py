@@ -59,9 +59,9 @@ class FSManager:
                     int(CS.MID_VAL + axis_ruv[2] / CS.MAX_JOY_VAL),
                     int(CS.MID_VAL + axis_xyz[2] / CS.MAX_JOY_VAL),
                     CS.MAX_VAL if buttons[7] > CS.MIN_VAL else CS.MIN_VAL,
-                    CS.MAX_VAL if buttons[3] > CS.MIN_VAL else CS.MIN_VAL,
-                    CS.MAX_VAL if axis_ruv[1] > CS.MIN_VAL else CS.MID_VAL if axis_ruv[1] == CS.MIN_VAL else CS.MIN_VAL,
                     CS.MAX_VAL if axis_ruv[0] > CS.MIN_VAL else CS.MIN_VAL,
+                    CS.MAX_VAL if axis_ruv[1] > CS.MIN_VAL else CS.MID_VAL if axis_ruv[1] == CS.MIN_VAL else CS.MIN_VAL,
+                    CS.MAX_VAL if buttons[3] > CS.MIN_VAL else CS.MIN_VAL,
                 ]
 
 

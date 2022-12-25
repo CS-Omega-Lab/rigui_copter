@@ -11,7 +11,8 @@ class PPM:
         self.rdm = rdm
         self.available = True
         if not os.path.exists(rdm.devices['platform_ttl_ppm_dev']):
-            self.rdm.lgm.dlg('PLTF', 1, 'Устройство TTL-PPM на ' + rdm.devices['platform_ttl_ppm_dev'] + ' не подключено.')
+            self.rdm.lgm.dlg('PLTF', 1,
+                             'Устройство TTL-PPM на ' + rdm.devices['platform_ttl_ppm_dev'] + ' не подключено.')
             self.rdm.update_init_data(1, 2)
             self.available = False
         else:
@@ -34,4 +35,3 @@ class PPM:
 
     def send(self, data):
         self.data = data
-

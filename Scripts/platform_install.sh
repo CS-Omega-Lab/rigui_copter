@@ -1,5 +1,3 @@
-#!/bin/bash
-
 apt update
 apt install -y toilet figlet
 toilet -f pagga -F metal RiGUI
@@ -14,12 +12,13 @@ apt install -y libgstreamer1.0-dev \
      gstreamer1.0-gtk3
 su -c "python3 -m pip install --upgrade --user pip" pi
 su -c "python3 -m pip install --upgrade --user rich pythonping netifaces pyzbar opencv-python numpy flask pyzbar" pi
-setcap cap_net_raw+ep $(readlink -f $(which python3))
-git clone https://github.com/CS-Omega-Lab/rigui_copter
-cd rigui_copter
+setcap cap_net_raw+ep "$(readlink -f "$(which python3)")"
+su -c "git clone https://github.com/CS-Omega-Lab/rigui_copter" pi
+su -c "cd rigui_copter" pi || exit
 apt install -y npm
-npm install pm2 -g
-pm2 start Startup/PlatformStartup.py
-pm2 startup
+su -c "npm install pm2 -g" pi
+su -c "pm2 startup" pi
+su -c "pm2 ls" pi
+su -c "pm2 start Startup/PlatformStartup.py" pi
 env PATH="$PATH":/usr/bin /usr/local/lib/node_modules/pm2/bin/pm2 startup systemd -u pi --hp /home/pi
-pm2 save
+su -c "pm2 save" pi
